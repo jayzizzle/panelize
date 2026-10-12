@@ -1,4 +1,4 @@
-# Agent notes (UI)
+## Panelize (UI)
 
 This app builds views with [Panelize](https://github.com/jayzizzle/panelize).
 

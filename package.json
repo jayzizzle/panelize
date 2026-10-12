@@ -1,6 +1,6 @@
 {
   "name": "panelize",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A React layout kit: named panels, tracks, grid, and type, themed with createPanelizeTheme and PanelizeProvider.",
   "keywords": [
     "react",
@@ -23,6 +23,9 @@
   "author": "Jon Zamora",
   "type": "module",
   "sideEffects": false,
+  "bin": {
+    "panelize": "./bin/panelize.mjs"
+  },
   "main": "./dist/panelize.cjs",
   "module": "./dist/panelize.es.js",
   "types": "./dist/index.d.ts",
@@ -44,6 +47,7 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "bin",
     "dist",
     "llms.txt",
     "llms-full.txt",

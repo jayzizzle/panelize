@@ -4,7 +4,9 @@
 
 > A React layout kit. Named boxes and type are the map of the screen. `createPanelizeTheme` + `PanelizeProvider` + `usePanelizeTheme` standardize paint. Forms are bonus.
 
-This file is for agents **building apps and custom components with Panelize**. Maintainers of this repo: [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). After `npm install panelize`, read `node_modules/panelize/llms.txt` (or the package export `panelize/llms.txt`). One-file dump: [llms-full.txt](llms-full.txt).
+This file is for agents **building apps and custom components with Panelize**. Maintainers of this repo: [CONTRIBUTING.md](https://github.com/jayzizzle/panelize/blob/main/CONTRIBUTING.md) and [AGENTS.md](https://github.com/jayzizzle/panelize/blob/main/AGENTS.md). After `npm install panelize`, read `node_modules/panelize/llms.txt` (or the package export `panelize/llms.txt`). One-file dump: [llms-full.txt](llms-full.txt).
+
+**Humans:** if you are setting up a project for an agent, run `npx panelize init-agents` from the project root. It adds a Panelize section to `AGENTS.md` that points agents here. See [Host setup](#host-setup).
 
 Import from `'panelize'`. Wrap the host once with `PanelizeProvider`. Do not take over the host’s styled-components `ThemeProvider`. Do not set `html` / `body` from the library. Host CSS must give the shell a height (`html`, `body`, `#root { height: 100% }` for a filled app).
 
@@ -42,10 +44,11 @@ The library does not warn at runtime if a host ignores this. Follow it anyway �
 
 - [llms-full.txt](llms-full.txt): this index, every `docs/` page, and the theme keys in one file
 
-## Host setup files
+## Host setup
 
-- [examples/cursor-rule.mdc](examples/cursor-rule.mdc): drop into a host app’s `.cursor/rules/`
-- [examples/AGENTS.md](examples/AGENTS.md): drop into a host app’s `AGENTS.md`
+Agents only know about these docs if the host project points at them. From the project root, `npx panelize init-agents` adds a marked Panelize section to `AGENTS.md` (created if missing, otherwise appended; re-running updates only that section). Add `--cursor`, `--claude`, `--copilot`, or `--all` for tool-specific files, and `--dry-run` to preview.
+
+By hand, copy the section from [examples/AGENTS.md](examples/AGENTS.md) into the host’s agent instructions (`AGENTS.md`, `CLAUDE.md`, Copilot instructions, or a system prompt). Cursor users can also copy [examples/cursor-rule.mdc](examples/cursor-rule.mdc) to `.cursor/rules/panelize.mdc`.
 
 ## Human docs
 
