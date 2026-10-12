@@ -4,6 +4,10 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-12
+
+No change to the components, props, or theme.
+
 ### Added
 
 - `npx panelize init-agents` adds a Panelize section to a project’s `AGENTS.md` so coding agents read `llms.txt` and `docs/composition.md`. It never overwrites existing content and re-running updates only its own section. `--cursor`, `--claude`, `--copilot`, and `--all` write tool-specific files; `--dry-run` previews.
@@ -11,6 +15,7 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 ### Changed
 
 - `examples/AGENTS.md` is now a `##` section meant to be merged into an existing `AGENTS.md`.
+- `examples/cursor-rule.mdc` no longer sets `alwaysApply: true`. The agent pulls it in when the task is building or editing UI.
 - README and `llms.txt` lead with the agent setup step; links to maintainer files in `llms.txt` now point at GitHub.
 
 ## [0.1.1] - 2026-10-12
@@ -41,6 +46,7 @@ First public release.
 - The library does not load font files and has no scheme toggle. The host owns both.
 - Next.js App Router needs the styled-components registry (see the README).
 
-[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/jayzizzle/panelize/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/jayzizzle/panelize/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jayzizzle/panelize/releases/tag/v0.1.0
