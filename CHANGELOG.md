@@ -4,6 +4,12 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-12
+
+### Changed
+
+- Releases are published through npm trusted publishing with staged releases. No library code changed.
+
 ## [0.1.0] - 2026-10-11
 
 First public release.
@@ -26,5 +32,6 @@ First public release.
 - The library does not load font files and has no scheme toggle. The host owns both.
 - Next.js App Router needs the styled-components registry (see the README).
 
-[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/jayzizzle/panelize/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jayzizzle/panelize/releases/tag/v0.1.0

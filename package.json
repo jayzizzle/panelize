@@ -1,6 +1,6 @@
 {
   "name": "panelize",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A React layout kit: named panels, tracks, grid, and type, themed with createPanelizeTheme and PanelizeProvider.",
   "keywords": [
     "react",
