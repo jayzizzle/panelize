@@ -17,16 +17,16 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          registry-url: https://registry.npmjs.org
+      - name: Install npm with trusted publishing and staged publishing
+        run: npm install -g npm@latest
       - run: npm ci
       - name: Tag matches package.json version
         run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
       - run: npm run llms-full
       - run: git diff --exit-code llms-full.txt
       - run: npm run check
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Stage the release (approve it on npmjs.com)
+        run: npm stage publish --provenance --access public
       - name: GitHub release
         run: gh release create "${GITHUB_REF_NAME}" --generate-notes
         env:

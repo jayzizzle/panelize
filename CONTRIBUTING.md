@@ -32,6 +32,17 @@ Exports: `src/index.ts`. Theme: `src/theme/index.ts`. Changing a public componen
 
 Be kind: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Report vulnerabilities privately: [`SECURITY.md`](SECURITY.md).
 
+## Releasing
+
+Maintainers only. Publishing uses npm trusted publishing (OIDC) and staged releases. There is no npm token in the repo.
+
+1. Move the `[Unreleased]` entries in [`CHANGELOG.md`](CHANGELOG.md) under a new version heading, and bump `version` in `package.json`.
+2. Run `npm run check` and merge to `main`.
+3. Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+4. The **Release** workflow checks the tag against `package.json`, runs `npm run check`, and runs `npm stage publish --provenance`. It creates a GitHub release.
+5. Approve the staged version on npmjs.com (package page, with 2FA). It is not public until you do.
+6. Check `npm view panelize version` and install it in a scratch project.
+
 ## Pull requests
 
 - User-visible changes get a line under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md).
