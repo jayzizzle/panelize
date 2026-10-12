@@ -48,6 +48,26 @@ export function App() {
 
 With no `theme` prop the provider uses `defaultTheme`. To set colors, brand, and type, see [Theme](#theme).
 
+## Using an AI agent?
+
+Panelize ships docs written for coding agents (`llms.txt` and `docs/`). Installing the package puts them in `node_modules`, but agents do not look there on their own. Point them at it once, from your project root:
+
+```sh
+npx panelize init-agents
+```
+
+This adds a short Panelize section to `AGENTS.md`, a file most coding agents read. The section tells the agent to read `node_modules/panelize/llms.txt` and `docs/composition.md` before writing UI, so it stays current when you upgrade the package. If `AGENTS.md` already exists, your content is left alone and only the section between the `<!-- panelize:start -->` and `<!-- panelize:end -->` lines is added or updated. Commit the result.
+
+| Option      | Also writes                                                                                                                             |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cursor`  | `.cursor/rules/panelize.mdc`, pulled in by the agent when the task is building or editing UI (`--force` overwrites a file that differs) |
+| `--claude`  | `CLAUDE.md` containing an `@AGENTS.md` import, for Claude Code                                                                          |
+| `--copilot` | `.github/copilot-instructions.md`                                                                                                       |
+| `--all`     | all of the above                                                                                                                        |
+| `--dry-run` | Writes nothing; prints what would change                                                                                                |
+
+Prefer to do it by hand, or use a tool with no instructions file? Paste the section from [`examples/AGENTS.md`](examples/AGENTS.md) into its instructions or system prompt.
+
 ## Next.js (App Router)
 
 Panelize is client UI with `'use client'` in the bundle, so you can import it from Server Components. styled-components needs its official registry, or server-rendered pages arrive **unstyled** and flash on hydrate.
@@ -167,10 +187,7 @@ Evergreen browsers: **Chrome / Edge 119+, Safari 16.5+, Firefox 121+**. The floo
 
 **Using Panelize in an app:** read [`llms.txt`](llms.txt) then [`docs/composition.md`](docs/composition.md). After `npm install panelize`, those files are `node_modules/panelize/llms.txt` (export `panelize/llms.txt`) and `node_modules/panelize/docs/`. One-file dump: `llms-full.txt`.
 
-Copy a ready-made rule into the **host** app:
-
-- Cursor: `node_modules/panelize/examples/cursor-rule.mdc` → `.cursor/rules/panelize.mdc` (`alwaysApply: true`).
-- Any agent (`AGENTS.md`, Copilot instructions, and so on): `node_modules/panelize/examples/AGENTS.md`.
+Set up the **host** project with `npx panelize init-agents` (see [Using an AI agent?](#using-an-ai-agent)). The drop-in files are `node_modules/panelize/examples/AGENTS.md` and `examples/cursor-rule.mdc`.
 
 Copyable layouts (page, sidebar, centered card, form, dashboard grid): [`docs/recipes.md`](docs/recipes.md). One line per export: [`docs/components.md`](docs/components.md).
 

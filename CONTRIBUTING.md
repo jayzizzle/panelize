@@ -18,6 +18,8 @@ This repo is the **Panelize library**. There is no app in-tree. To look at UI, c
 | `npm run llms-full`   | Rebuilds `llms-full.txt` from `llms.txt` and `docs/`                               |
 | `npm run format`      | Prettier                                                                           |
 
+`bin/panelize.mjs` is the `panelize init-agents` command hosts run to wire up their agents. Try it from a scratch project with `node ../panelize/bin/panelize.mjs init-agents --dry-run`.
+
 ## Agents
 
 If an agent is writing the change, it must follow [`AGENTS.md`](AGENTS.md) (how to maintain this library). Composition rules for **using** Panelize live in [`llms.txt`](llms.txt) and [`docs/composition.md`](docs/composition.md) — do not fork those rules into this file.

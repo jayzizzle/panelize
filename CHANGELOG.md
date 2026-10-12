@@ -4,6 +4,15 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+### Added
+
+- `npx panelize init-agents` adds a Panelize section to a project’s `AGENTS.md` so coding agents read `llms.txt` and `docs/composition.md`. It never overwrites existing content and re-running updates only its own section. `--cursor`, `--claude`, `--copilot`, and `--all` write tool-specific files; `--dry-run` previews.
+
+### Changed
+
+- `examples/AGENTS.md` is now a `##` section meant to be merged into an existing `AGENTS.md`.
+- README and `llms.txt` lead with the agent setup step; links to maintainer files in `llms.txt` now point at GitHub.
+
 ## [0.1.1] - 2026-10-12
 
 ### Changed

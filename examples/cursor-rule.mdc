@@ -1,6 +1,6 @@
 ---
-description: Compose views with Panelize layout primitives and type
-alwaysApply: true
+description: Build and edit frontend UI (pages, views, layouts, components) in a project that has panelize installed, including new files that do not import it yet. Compose with Panelize layout primitives and type.
+alwaysApply: false
 ---
 
 # Panelize (this app)
