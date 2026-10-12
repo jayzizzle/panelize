@@ -1,0 +1,1206 @@
+<!-- llms.txt -->
+
+# Panelize
+
+> A React layout kit. Named boxes and type are the map of the screen. `createPanelizeTheme` + `PanelizeProvider` + `usePanelizeTheme` standardize paint. Forms are bonus.
+
+This file is for agents **building apps and custom components with Panelize**. Maintainers of this repo: [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). After `npm install panelize`, read `node_modules/panelize/llms.txt` (or the package export `panelize/llms.txt`). One-file dump: [llms-full.txt](llms-full.txt).
+
+Import from `'panelize'`. Wrap the host once with `PanelizeProvider`. Do not take over the host’s styled-components `ThemeProvider`. Do not set `html` / `body` from the library. Host CSS must give the shell a height (`html`, `body`, `#root { height: 100% }` for a filled app).
+
+## How to compose (strict)
+
+Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
+
+- `Panels` is the **outer shell** of a view. Direct children are only `Panel` (one `Panel` is allowed).
+- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. It must not contain a stray `Row`, `Col`, or `Cell`.
+- Pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panel` only under `Panels`.
+- `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
+- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
+- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
+
+The library does not warn at runtime if a host ignores this. Follow it anyway — that is how the tree stays readable.
+
+## Core
+
+- [Composition](docs/composition.md): pairing, who positions, good and bad trees, which primitive to use
+- [Recipes](docs/recipes.md): copyable page, sidebar, centered card, form, dashboard grid, header/body/footer
+- [Components](docs/components.md): every export, element, parent, and value API on one page
+- Prop reference: `node_modules/panelize/dist/index.d.ts` (every prop is documented in JSDoc; read the type, not a guess)
+- [Shell (`Panels` / `Panel`)](docs/shell.md): page vs split, `fill`, `scroll`, `horizontal`, `stack`
+- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `gap`, `wrap`, `stack`, `Div`, `Grid`
+- [Controls](docs/controls.md): per-control behavior notes (chrome, defaults, edge cases)
+- [Accessibility](docs/accessibility.md): names, structure, keyboard, roles, focus
+- [Text](docs/text.md): `Text`, `Heading`, `Span`, `TextLink`, `Label`
+- [Theme and hooks](docs/theme.md): `createPanelizeTheme`, `PanelizeProvider`, `usePanelizeTheme`
+
+## Bonus
+
+- [Forms, buttons, chips](docs/forms.md): controls on top of the layout core, value ownership, `Select` / `MultiSelect`, validation
+
+## Full context
+
+- [llms-full.txt](llms-full.txt): this index, every `docs/` page, and the theme keys in one file
+
+## Host setup files
+
+- [examples/cursor-rule.mdc](examples/cursor-rule.mdc): drop into a host app’s `.cursor/rules/`
+- [examples/AGENTS.md](examples/AGENTS.md): drop into a host app’s `AGENTS.md`
+
+## Human docs
+
+- [README.md](README.md): install, quick start, fonts, goals, usage, vocabulary, caveats
+- [examples/panelize.theme.md](examples/panelize.theme.md): every key `createPanelizeTheme` accepts
+
+---
+
+<!-- docs/composition.md -->
+
+# Composition
+
+Build views and custom components from layout primitives. The JSX should read as the picture without opening the browser.
+
+## Pairing (bidirectional)
+
+| Item    | Direct parent | That parent’s direct children |
+| ------- | ------------- | ----------------------------- |
+| `Panel` | `Panels`      | only `Panel` (one is allowed) |
+| `Row`   | `Rows`        | only `Row`, **two or more**   |
+| `Col`   | `Cols`        | only `Col`, **two or more**   |
+| `Cell`  | `Grid`        | only `Cell`, **two or more**  |
+
+`Row` must not sit on `Panel`, `Div`, `Col`, `Cell`, or `Grid`. Same idea for `Col` and `Cell`. Fragments and `.map` still have to produce those children.
+
+Custom components are **not** substitutes for `Row` / `Col` / `Cell`. Build them from primitives, then place the custom component inside a `Row`, `Col`, `Cell`, `Panel`, or `Div`.
+
+## Shell → sections → tracks
+
+1. `Panels` — outer shell of the view (`fill`, `scroll`, column vs `horizontal`).
+2. `Panel` — sections (surfaces). One is fine. Several for nav + main, or stacked regions.
+3. Inside a `Panel`: `Rows` / `Cols` / `Grid` / `Div` / nested `Panels` / type / controls / custom components.
+
+A `Panel` is an **open** section. It is not a homogeneous track.
+
+If there is only one band of content, do not wrap it in `Rows` of one `Row` (or `Cols` of one `Col`, or `Grid` of one `Cell`). Put that content in the `Panel` or a `Div`.
+
+## Who positions
+
+The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.”
+
+`Text` / `Heading` / `Span` / `TextLink` / `Label` are not layout shells (no `fill` / `flex` / padding). Controls may take `fill` to stretch the control itself; the parent still decides where the control sits.
+
+## Type
+
+Visible writing uses `Text`, `Heading`, `Span`, `TextLink`, or `Label`. Bare strings in a `Panel` / `Row` / `Col` / `Div` do not pick up `--panelize-text` / muted / highlighted.
+
+## Good
+
+```tsx
+<Panels fill scroll='vertical'>
+  <Panel variant='muted' minHeight='100%'>
+    <Rows minHeight='100%' gap='base' alignX='center' alignY='center'>
+      <Row>
+        <Heading level={1} color='primary'>
+          Panelize
+        </Heading>
+      </Row>
+      <Row>
+        <Text muted>A React panel layout library.</Text>
+      </Row>
+      <Row>
+        <Cols gap='small'>
+          <Col>
+            <Button label='Deploy now' />
+          </Col>
+          <Col>
+            <Button outline label='Details' />
+          </Col>
+        </Cols>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
+Column of rows, last row is two columns of buttons. The `Cols` gap and the `Row` place the buttons; the buttons do not.
+
+One section, one heading — no `Rows`:
+
+```tsx
+<Panels fill>
+  <Panel variant='base' padding='base'>
+    <Heading level={2}>Account</Heading>
+  </Panel>
+</Panels>
+```
+
+## Bad
+
+Each block is wrong. The comment says why.
+
+```tsx
+// Row is not a direct child of Rows
+<Panel>
+  <Row>
+    <Text>Hello</Text>
+  </Row>
+</Panel>
+```
+
+```tsx
+// Rows of one Row: put the content in the Panel or a Div
+<Rows>
+  <Row>
+    <Text>Hello</Text>
+  </Row>
+</Rows>
+```
+
+```tsx
+// Col is not a Rows child
+<Rows>
+  <Col>
+    <Text>Hello</Text>
+  </Col>
+  <Row>
+    <Text>World</Text>
+  </Row>
+</Rows>
+```
+
+```tsx
+// Copy is not in a type primitive, so it misses --panelize-text
+<Panel>Hello</Panel>
+```
+
+```tsx
+// A control positions itself. Button has no alignX
+<Col>
+  <Button alignX='center' label='Save' />
+</Col>
+```
+
+Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
+
+## Which primitive?
+
+| You want                    | Use                                                |
+| --------------------------- | -------------------------------------------------- |
+| The outer frame of a view   | `Panels`                                           |
+| A surface (nav, main, card) | `Panel`                                            |
+| A vertical list of bands    | `Rows` of two or more `Row`                        |
+| A horizontal list of items  | `Cols` of two or more `Col`                        |
+| A two-dimensional layout    | `Grid` of two or more `Cell`                       |
+| One wrapper or one band     | `Div`, or the `Panel` itself                       |
+| Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label` |
+| Copyable starting points    | [recipes](recipes.md)                              |
+
+---
+
+<!-- docs/shell.md -->
+
+# Shell (`Panels` / `Panel`)
+
+`Panels` is the outer shell of a view. Setting it up well matters more than any control.
+
+Default `Panels` is an **absolute** column (`inset` when `fill`). `relative` opt-in. `horizontal` is a row (sidebar + main). Overlay shells belong on `Panels`, not `Rows fill`.
+
+Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`.
+
+`Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants.
+
+## Host height
+
+A filled shell needs a viewport-tall host:
+
+```css
+html,
+body,
+#root {
+  height: 100%;
+}
+```
+
+The library does not set `html` / `body`. For a long in-flow document, drop host `height` and use `min-height: 100%`.
+
+## Page (scroll the shell)
+
+Default column — do not add `horizontal`. Do not put `fill` on the inner `Panel` (that locks height). Use `minHeight='100%'` so a short window still paints. Do not center on the scrolling `Panels`; center on inner `Rows`.
+
+```tsx
+<Panels fill scroll='vertical'>
+  <Panel variant='muted' minHeight='100%' padding='base'>
+    <Heading level={1}>Title</Heading>
+    <Text muted>Long page copy…</Text>
+  </Panel>
+</Panels>
+```
+
+## Split (scroll the pane)
+
+`horizontal` + `fill` on `Panels`. `scroll` on the pane `Panel`, not the outer shell. Sidebar: `width`. Main: `flex` (not `fill` — `fill` fights the sidebar). `stack` on this row: **at most** this wide → column (not Tailwind `md:` and-up).
+
+```tsx
+<Panels horizontal fill stack='sm'>
+  <Panel variant='muted' width='12rem'>
+    <Text>Nav</Text>
+  </Panel>
+  <Panel variant='base' flex scroll='vertical'>
+    <Text>Main</Text>
+  </Panel>
+</Panels>
+```
+
+## `scroll`
+
+Only on `Panels` and `Panel`. `vertical` clips x. `horizontal` / `both` need a child actually wider than the box (`width` / `minWidth` on children). Nested `scroll` in a split needs `flex` on the pane (`min-width` / `min-height` 0) so it can shrink.
+
+`Panel` / `Row` / `Col` / `Div` are `flex-shrink: 0` until `flex`.
+
+---
+
+<!-- docs/layout.md -->
+
+# Layout vocabulary
+
+Space / size / border tokens: `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Breakpoints: `sm` | `md` | `lg`. Token or CSS length — not a unitless number. Boxes are `border-box`.
+
+| Prop                      | Meaning                                                                                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `fill`                    | Size to parent. Absolute `Panels`: `inset: 0`. Else height / width 100%. `Row` theme height `auto` → width 100% only. `Col` theme width `auto` → height 100% only. Explicit `width` / `height` win. Not on `Cell`. |
+| `width` / `height`        | All layout except `Cell`. `Div` omit = unset.                                                                                                                                                                      |
+| `flex`                    | `flex: 1 1 0%` plus `min-width` / `min-height` 0 (nested `scroll` can shrink). Not `fill`. `Panel` / `Row` / `Col` / `Div` are `flex-shrink: 0` until `flex`.                                                      |
+| `alignX` / `alignY`       | Screen axes. Set on the **wrapper**. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit.                                                                           |
+| `gap`                     | `Panels`, `Rows`, `Cols`, `Grid`.                                                                                                                                                                                  |
+| `wrap`                    | `Rows` / `Cols`. Not `stack`. Not `Grid`.                                                                                                                                                                          |
+| `stack`                   | `horizontal` `Panels` / `Cols` / `Grid`. Container query, **at most** this wide → column.                                                                                                                          |
+| `stackCols`               | `Grid` + `stack`: column count while stacked. Default 1.                                                                                                                                                           |
+| `numCols` / `numRows`     | `Grid` only. Equal `minmax(0, 1fr)` tracks.                                                                                                                                                                        |
+| `spanX` / `spanY`         | `Cell` only. Default 1. `stack` forces `spanX` to 1 when `stackCols` is 1.                                                                                                                                         |
+| `scroll`                  | `Panels` / `Panel` only. See [shell](shell.md).                                                                                                                                                                    |
+| `relative` / `horizontal` | `Panels` only.                                                                                                                                                                                                     |
+
+## `Div`
+
+Catch-all box (spacing, size, border, `fill` / `flex`). No background or color of its own. Use it when you need one wrapper and a `Rows` of one `Row` would be wrong. Direct children: anything except a stray `Row` / `Col` / `Cell` (those still belong under their tracks).
+
+## Tracks
+
+```tsx
+<Rows gap='small' alignX='center'>
+  <Row>
+    <Text>One</Text>
+  </Row>
+  <Row>
+    <Text>Two</Text>
+  </Row>
+</Rows>
+
+<Cols stack='sm' gap='small'>
+  <Col width='12rem'>
+    <Text>Side</Text>
+  </Col>
+  <Col flex>
+    <Text>Main</Text>
+  </Col>
+</Cols>
+
+<Grid numCols={3} stackCols={2} gap='small' stack='sm'>
+  <Cell>
+    <Text>A</Text>
+  </Cell>
+  <Cell spanX={2}>
+    <Text>B</Text>
+  </Cell>
+</Grid>
+```
+
+`Cell` has no `width` / `height` / `fill`. Size comes from the grid tracks and `spanX` / `spanY`. `Cell` is `min-width` / `min-height` 0 so content can shrink.
+
+## Borders
+
+Every layout box. Width cascade like padding: `borderWidth` → `borderX` / `Y` → side. `borderColor` is surface, brand, or status — not a `Panel` `variant`. Default width `none`.
+
+---
+
+<!-- docs/text.md -->
+
+# Text
+
+Visible copy must use a type primitive so it inherits the nearest `Panel` (`--panelize-text`, muted, highlighted) and theme type tokens.
+
+| Component  | Element   | Notes                                                                                                                         |
+| ---------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | Body. Omit color → panel `text.base`.                                                                                         |
+| `Heading`  | `h1`–`h6` | Required `level` `1`–`6`. Omit `size` → theme heading size for that level. Omit `weight` → `bold`. Omit `family` → `display`. |
+| `Span`     | `span`    | Nested in `Text` / `Span`: omit size/weight/`family` → inherit. Omit color → CSS `inherit`.                                   |
+| `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit.                                                         |
+| `Label`    | `label`   | Caption for controls. Prefer `label` prop; `htmlFor` + control `id`. Wrap `Switch` / `Checkbox` / `Radio`.                    |
+
+None of these is a layout shell: no `fill` / `flex` / padding. Gap belongs on `Rows` / `Cols` / `Grid` / `Div`.
+
+`muted` / `highlighted` use the panel `text` object. `color='primary'` / `secondary` / `accent` → `brand.*.base`. `color='danger'` / `warning` / `success` / `info` → `status.*.base`. Raw CSS `color` wins. If both flags, `highlighted` wins.
+
+Size: `fontSizes` tokens or CSS. Weight: omit on `Text` = `base` (400). Family: `base` / `display` / `mono`. The library does not load font files.
+
+```tsx
+<Heading level={1} uppercase color='primary'>
+  Panelize
+</Heading>
+<Text muted size='small'>
+  Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
+</Text>
+```
+
+---
+
+<!-- docs/theme.md -->
+
+# Theme and hooks
+
+Appearance comes from the theme, not one-off color props on every box. That is how views stay standardized.
+
+## `createPanelizeTheme`
+
+Author schemes, surfaces, brand, type, and component defaults. Export a **stable** object. Omit any key to keep the library default. Full keys: [examples/panelize.theme.md](../examples/panelize.theme.md). Frozen gray bank: `palette` from `'panelize'` (not a theme key).
+
+```ts
+import { createPanelizeTheme, palette } from 'panelize'
+
+export const panelizeTheme = createPanelizeTheme({
+  colors: {
+    dark: {
+      app: { background: palette.gray.extraDark, text: palette.gray.extraLight },
+      muted: {
+        background: palette.gray.dark,
+        text: { base: palette.white, muted: palette.gray.base, highlighted: palette.white },
+      },
+    },
+  },
+  brand: { primary: '#ff9f2e' },
+})
+```
+
+`colors: { dark, light }` are schemes. After create, **`theme.colors` is the active slice** (`muted` / `base` / `highlighted` / `app`) — not `{ dark, light }`. Both maps are `theme.colorSchemes`. Surfaces belong under a scheme (`colors.dark.muted`). A top-level `colors.muted` is ignored. `dark` is a scheme, not a panel variant.
+
+Brand (`primary` / `secondary` / `accent`) and status (`danger` / `warning` / `success` / `info`) are global, shared across schemes. Library `secondary` / `accent` follow `primary` until set. Status does not follow `primary`. Hosts set their brand kit here; the library defaults stay neutral.
+
+## `PanelizeProvider`
+
+Puts that object on the tree and wraps a canvas (`color-scheme` from `mode`; optional `app` paint). `mode` (`dark` default) selects the slice. Hosts own the toggle — there is no library toggle. `prefers-color-scheme` is host-side.
+
+Do **not** take over the host’s styled-components `ThemeProvider`. Do **not** set `html` / `body`.
+
+Without a provider, components still render using `defaultTheme` (`mode` `dark`). Always wrap a real host.
+
+```tsx
+<PanelizeProvider theme={panelizeTheme} mode={mode}>
+  {children}
+</PanelizeProvider>
+```
+
+## `usePanelizeTheme`
+
+**Use this in views and custom components** that need colors, space, or type from the kit. `.colors` is the current scheme’s surfaces. `.mode` is `'dark'` | `'light'`. `.brand` / `.status` are the shared slots. `.space` / `.fontSizes` / … are the scales.
+
+Do not invent a parallel palette in a custom component. Read the theme (or inherit `--panelize-*` from the nearest `Panel`). Nested `Panel` `variant` changes the CSS variables for descendants.
+
+```tsx
+function Stat({ label, value }: { label: string; value: string }) {
+  const { colors } = usePanelizeTheme()
+  return (
+    <Div padding='small' borderWidth='extraSmall' borderColor={colors.base.border}>
+      <Text muted size='small'>
+        {label}
+      </Text>
+      <Text highlighted>{value}</Text>
+    </Div>
+  )
+}
+```
+
+Place `Stat` in a `Col` / `Row` / `Cell` / `Panel`. `Stat` does not take `alignX`.
+
+## Recipes
+
+Author the theme once in the host, export a stable object, and pass `mode` from wherever the host keeps its color-scheme state. The library has no toggle and does not read `prefers-color-scheme`.
+
+**Brand kit.** `secondary` and `accent` follow `primary` until set. Status colors do not follow brand.
+
+```ts
+export const panelizeTheme = createPanelizeTheme({
+  brand: {
+    primary: '#6d5dfc',
+    secondary: '#00b8a9',
+    accent: { base: '#f9c80e', hover: '#ffd84d' },
+  },
+  status: { danger: '#d64550' },
+})
+```
+
+**Both schemes.** Author `dark` and `light` surfaces together. Omit any surface to keep the default.
+
+```ts
+createPanelizeTheme({
+  colors: {
+    dark: { app: { background: '#0e0e10', text: '#ececec' } },
+    light: {
+      app: { background: '#ffffff', text: '#1a1a1a' },
+      muted: {
+        background: '#f3f3f5',
+        text: { base: '#1a1a1a', muted: '#6b6b73', highlighted: '#000000' },
+      },
+    },
+  },
+})
+```
+
+**Fonts and type scale.** The library does not load font files. Point the tokens at what the host loads.
+
+```ts
+createPanelizeTheme({
+  fontFamilies: { base: 'Inter, sans-serif', display: '"Fraunces", serif' },
+  fontSizes: { base: '1.0625rem' },
+})
+```
+
+**Component defaults.** Change a control everywhere instead of on every instance. `defaults.textarea` and `defaults.select` start from the merged `defaults.input`.
+
+```ts
+createPanelizeTheme({
+  defaults: {
+    button: { borderRadius: 'small', paddingX: 'large' },
+    input: { borderRadius: 'small' },
+    select: { listMaxHeight: '12rem' },
+  },
+})
+```
+
+**Custom component on the theme.** Read `usePanelizeTheme` or inherit `--panelize-*` from the nearest `Panel`; do not hard-code hexes. See `Stat` above.
+
+---
+
+<!-- docs/forms.md -->
+
+# Forms, buttons, chips (bonus)
+
+Core is layout + text. These controls exist so a host can ship a complete kit. Still compose them **inside** `Panel` / `Row` / `Col` / `Cell` / `Div`. The wrapper places them.
+
+Per-control behavior notes: [controls](controls.md). Full prop list: exported types in `node_modules/panelize/dist/index.d.ts` (JSDoc on every prop). Human detail: [README.md](../README.md). Copyable field layout: [recipes](recipes.md#form-fields). Keyboard and labelling rules: [accessibility](accessibility.md).
+
+- `Button` — `label` preferred; `children` win. `color` is the chroma slot. `outline` stays hollow. `fill` stretches the button, not a panel.
+- `Chip` — badge, not a button. No hover.
+- `Input` / `NumberInput` / `Textarea` — field chrome. Instance `color` is **focus** chroma, not glyph ink (`ink`). Prefer `Label` + `htmlFor`.
+- `Select` / `MultiSelect` — custom listboxes, not native `<select>`. Host `value` / `onChange`. `MultiSelect` is a count in the field (`N selected`), not chips.
+- `Switch` / `Checkbox` / `Radio` — wrap with `Label` (same `size`). Empty checkbox/radio stroke follows the label (`currentColor`).
+- `Label` — type-like ink; not a layout shell.
+
+Do not add `alignX` / `flex` / padding-as-layout on these to position them. Use a `Col` / `Row` / `Div`.
+
+## Value ownership
+
+The host owns every value. Nothing here keeps state you did not ask for.
+
+| Control               | Controlled                                                                                      | Uncontrolled     |
+| --------------------- | ----------------------------------------------------------------------------------------------- | ---------------- |
+| `Input` etc.          | `value` + `onChange(event)`                                                                     | `defaultValue`   |
+| `NumberInput`         | `value` + `onChange(event)`; read `event.currentTarget.valueAsNumber` (the `value` is a string) | `defaultValue`   |
+| `Select`              | `value: string` + `onChange(value: string)`                                                     | not offered      |
+| `MultiSelect`         | `value: string[]` + `onChange(value: string[])`                                                 | not offered      |
+| `Switch` / `Checkbox` | `checked` + `onChange(event)`                                                                   | `defaultChecked` |
+| `Radio`               | `name` + `value` + `checked` + `onChange(event)`                                                | `defaultChecked` |
+
+`Select` / `MultiSelect` call `onChange` with plain values, not events. Cleared is `''` (`Select`) or `[]` (`MultiSelect`). A `value` that has no matching option is still shown.
+
+## `Select` and `MultiSelect`
+
+```tsx
+<Label htmlFor='country' label='Country' />
+<Select id='country' value={country} onChange={setCountry} placeholder='Choose' clearable>
+  <Option value='us'>United States</Option>
+  <Option value='mx' disabled>Mexico</Option>
+</Select>
+```
+
+- Options: `<Option value>` children and/or `options={[{ value, label, disabled? }]}`. Children win on a duplicate `value`.
+- The menu renders in a portal on `document.body` (`position: fixed`). A scrolling `Panels` does not clip it. It sits at `defaults.select.listZIndex` (default 1100); raise that in the theme if a host overlay covers it.
+- `clearable` shows ×. `required` blocks an empty value and disables clearing. `selectedAtTop` lists the selected option(s) first. `Select` also has `emptyOption`. `readOnly` opens to inspect without changing.
+- `name` writes hidden input(s) so a native `<form>` submits the value. `MultiSelect` writes one input per value.
+- `open` / `onOpenChange` control the menu. Omit for internal state.
+- `MultiSelect` stays open while toggling and shows `N selected`. The caption is English-only.
+- No native fallback, optgroups, or typing into the field.
+
+## `Switch`, `Checkbox`, `Radio`
+
+Wrap the control in a `Label` and give both the same `size`. A sibling caption works only with `htmlFor`, and a `disabled` control then cannot dim its label.
+
+```tsx
+<Label size='small'>
+  <Checkbox size='small' checked={agree} onChange={(e) => setAgree(e.currentTarget.checked)} /> I
+  agree
+</Label>
+```
+
+`Checkbox` supports `indeterminate` (the native property; it does not set `checked`). A `Radio` group shares `name`; the host decides which `value` is checked.
+
+## Validation
+
+`Input` / `NumberInput` / `Textarea` / `Select` paint `status.danger` for `:user-invalid` (after the user edits) and for `aria-invalid='true'`. Set `aria-invalid` yourself for submit-time errors. Show the message in a `Text color='danger'` and tie it to the field with `aria-describedby`.
+
+---
+
+<!-- docs/accessibility.md -->
+
+# Accessibility
+
+What Panelize does for you, and what the host must still do.
+
+## Names
+
+Every control needs an accessible name. Use a `Label` with `htmlFor` matching the control `id`, or wrap the control in a `Label`. With no visible text, use `aria-label`. A `placeholder` is not a name.
+
+- `Input` / `NumberInput` / `Textarea` / `Select` / `MultiSelect`: `Label htmlFor` + `id`, else `aria-label`.
+- `Switch` / `Checkbox` / `Radio`: wrap in a `Label` (same `size`). These have no `label` prop.
+- `Button`: `label`, or `children` with text. Icon-only: `aria-label`.
+- `Chip` is not interactive. Do not use it as a button.
+
+## Structure
+
+- `Heading` needs `level` and renders `h1`–`h6`. Pick the level for the document outline, not for size (`size` is separate).
+- `Panels` / `Panel` / `Rows` / `Cols` / `Grid` are plain `div`s. They add no landmarks or roles. Wrap them in `header` / `nav` / `main` / `section` in the host.
+- Copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` (real `p` / `h*` / `span` / `a` / `label`).
+
+## Keyboard
+
+| Control               | Keys                                                                                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `Select`              | Arrows move, Enter / Space pick, Home / End, type-ahead, Escape closes, Backspace / Delete clears when `clearable`, Tab leaves and closes |
+| `MultiSelect`         | Same, but Enter / Space toggle. Type-ahead on a closed field opens and highlights                                                         |
+| `Switch` / `Checkbox` | Space toggles                                                                                                                             |
+| `Radio`               | Arrow keys move within a `name` group                                                                                                     |
+| `Button` / `TextLink` | Native                                                                                                                                    |
+
+Disabled options are skipped. Escape is handled on the trigger, not on `window`.
+
+## Roles and state
+
+- `Select` / `MultiSelect`: trigger is `role='combobox'` with `aria-haspopup='listbox'`, `aria-expanded`, and `aria-autocomplete='none'`. The menu is `role='listbox'` with `role='option'` rows. The listbox is labelled by the control only when you set `id`. `readOnly` sets `aria-readonly`.
+- `Switch` is `input[type=checkbox][role=switch]`.
+- Invalid fields: set `aria-invalid='true'`. The library paints it and `:user-invalid`. Link the error text with `aria-describedby`.
+
+## Focus and contrast
+
+- Focus is `:focus-visible` only: fields ring and glow in their `color`, `TextLink` uses a `currentColor` outline, switches / checkboxes / radios glow in the on-state chroma.
+- `disabled` controls dim and are not focusable. `readOnly` on `Select` / `MultiSelect` stays full contrast.
+- Contrast is the host’s job. The default theme is dark first. `palette` adjacent steps are **not** a safe text-on-fill pair; skip a step. Default `warning` (`#ffd60a`) is weak as small text on light panels. Check any custom `createPanelizeTheme` colors.
+- `PanelizeProvider` sets CSS `color-scheme` from `mode` so native scrollbars and form chrome match. Respecting `prefers-color-scheme` or `prefers-reduced-motion` is host-side.
+
+---
+
+<!-- docs/controls.md -->
+
+# Controls
+
+Behavior notes for each control: chrome, defaults, edge cases. Props are in `node_modules/panelize/dist/index.d.ts`. Examples live in the [README](../README.md#controls). Value ownership and validation: [forms](forms.md). Labelling and keyboard: [accessibility](accessibility.md).
+
+## Button
+
+`<button type="button">`. Caption: `label` (preferred). Custom insides: `children` (`Cols` / `Text` / host icons) — they win if both are set. A string as `children` still works; don’t prefer it. No visible text: `aria-label`. Omit chrome = filled chroma; `outline` = border + slot label, hollow at rest/hover/active. `color` is the chroma slot (`primary` / `secondary` / `accent` / `danger` / `warning` / `success` / `info`) for rest, hover, and active (outline border stays on this slot). Filled ink is `defaults.button.ink` (library `palette.black`), not chroma-on-fill. `size` is font size; `fill` is the box (100% of parent). Native `disabled` dims and skips hover. Instance `padding` / `paddingX` / `paddingY` / `borderWidth` / `borderRadius` override the theme. `background` / `ink` are a token/CSS (all steps) or `{ base, hover, active }`; omitted keys keep the slot / black ink / transparent outline. `background` on `outline` opts in to fill. No margin.
+
+## Chip
+
+`<span>` badge. Label is the chroma slot (`primary` / `secondary` / `accent` / `danger` / …). Fill is `color-mix` of that chroma at `defaults.chip.tint` (`12%`) into the nearest panel `--panelize-bg` until `background`. Capsule radius until `borderRadius`. `borderWidth` default `none`. Caption: `label` (preferred); `children` win. Instance `ink` / `borderColor` / `background` are surface / brand / status / CSS. `base` on those is the panel `base` surface (fill vs text vs border by prop), not a brand slot. Not a layout shell.
+
+## Input
+
+`<input type="text">` unless `type` is set. Rest chrome is the nearest `Panel` (bg, text, border, muted placeholder). **`color` is focus chroma only** (caret, border, glow) — not the typed text (`ink`). Instance `background` / `ink` / `borderColor` override rest fill, glyphs, and rest stroke (surface / brand / status / CSS). `base` means that surface’s fill, `text.base`, or `border` depending on the prop. Instance `borderWidth` / `borderRadius` override the theme. Focus / `:user-invalid` still own the stroke. After the user has edited, `:user-invalid` paints `status.danger` (same 2px / 18% glow, caret included). Hosts can also set `aria-invalid="true"` for submit-time paint without a prior edit. Pair a visible name with `Label htmlFor`; placeholder-only still needs `aria-label`. Native HTML `size` is omitted; `size` is font size. `fill` is the box. `ref` works as a normal prop. Host owns the value. `readOnly` dims like `disabled` but keeps a text cursor.
+
+## NumberInput
+
+`Input` locked to `type="number"`. Same chrome (`css`, `background`, `ink`, `borderColor`, `:user-invalid` / `aria-invalid`). Native `min` / `max` / `step` (`step='any'` allowed). No `type` prop. UA stepper arrows are hidden (`appearance: none`); bounds and step are the API. `onChange` still gives a string — use `event.currentTarget.valueAsNumber`. Wheel over the field blurs so the value does not accidentally step. Prefer `NumberInput` over `<Input type='number'>`.
+
+## Textarea
+
+Same field chrome as `Input` (`<textarea>`), including `:user-invalid` / `aria-invalid`. Theme field keys inherit `defaults.input` unless `defaults.textarea` overrides them. Default `rows={3}`. Resize is off until `resize`. `fill` stretches the box and does not lock resize.
+
+## Select
+
+Custom listbox (not a native `<select>`). Trigger uses the same field chrome as `Input` (`background` / `ink` / `borderColor` / `aria-invalid`). Theme field keys inherit `defaults.input` unless `defaults.select` overrides them (`listMaxHeight` / `listOffset` / option padding / `listZIndex` / `listShadow`). The menu portals to `document.body` (`position: fixed`) so a scrolling `Panels` does not clip it. Host owns `value` / `onChange` (`(value: string) => void`; empty string when cleared). A value that is not in `options` still shows (raw `value`) and can be cleared. Omit `open` for internal open state, or pass `open` + `onOpenChange`. Options: `options={{ value, label, disabled? }[]}` and/or child `<Option value>` (children win on the same `value`). `placeholder` when empty (muted). `required` blocks clearing to empty and marks the hidden input `required`. `clearable` shows an × when there is a value (ignored when `required`). `selectedAtTop` lists the selected option first in the menu (the `emptyOption` row stays first). `emptyOption` adds a first row with value `''` (`true` uses `placeholder`; a string is the caption; ignored when `required`). `readOnly` opens to inspect without pick / clear (not dimmed). Without `required`, clicking the selected option deselects it. `name` writes a hidden input for form submit (`disabled` when the select is). Pointer: pick, clear, caret-toggle close, and click-outside **blur** the trigger (no open ring). Keyboard pick / Escape keep focus. Tab away closes the menu. Keyboard: arrows, Enter, Space, Escape on the trigger (not `window`), Home, End, type-ahead; Backspace / Delete clears when clearable. `aria-autocomplete="none"`. The listbox uses `aria-labelledby` only when `id` is set. Disabled options are skipped. CSS chevron on the trigger; the value and rest option labels share highlighted ink. The selected option uses `color` (primary) for the label plus a CSS check, with no row fill. Hover (and keyboard active) fills the row only — text color does not change. No native fallback, multi-select, combobox typing, or optgroups. Prefer `Label` + `htmlFor`. `fill` stretches the trigger. Not a layout shell.
+
+## MultiSelect
+
+Custom multi listbox (not `multiple` on `Select`). Same field chrome, portal menu, and `defaults.select` as `Select`. Host owns `value` / `onChange` (`string[]`; empty array when cleared). The trigger shows a count (`2 selected`) — single line, no chips, English caption. The menu stays open while toggling. Each row is a `Checkbox` plus label; checked rows use `color` (primary) for the label, matching `Select`. Hover fills the row only. `clearable` is clear-all. `required` blocks an empty set (cannot uncheck the last). `selectedAtTop` lists checked options first (host order within groups); the highlight follows the same value after a toggle. `readOnly` opens to inspect without toggle / clear (not dimmed; row checkboxes stay enabled visually). No `emptyOption`. `name` writes one hidden input per value (`value=''` when empty, `required` on that input). Pointer: clear, caret-toggle close, and click-outside **blur** the trigger (toggles do not). Keyboard toggle / Escape keep focus. Tab away closes the menu. Keyboard: arrows, Enter / Space toggle, Escape on the trigger (not `window`), Home, End, type-ahead; Backspace / Delete clears when clearable. Type-ahead while **closed** opens and highlights (does not toggle). Disabled options are skipped. CSS chevron on the trigger. Prefer `Label` + `htmlFor`. `fill` stretches the trigger. Not a layout shell.
+
+## Switch
+
+`<input type="checkbox" role="switch">`. Native `checked` / `defaultChecked` / `onChange` — host owns the value. **`color` is the on-track chroma** (`primary` / `secondary` / `accent` / status; theme default `primary`). Off-track mixes panel text into `--panelize-bg` until `background`. Thumb is `defaults.switch.ink` (`palette.white`) until `ink`. Pair a visible name with `Label htmlFor`. No `label` / `children`. No `fill`. `size` is the type token (`extraSmall` … `extraLarge`). Track height is that size × theme `lineHeight` (keep `lineHeight` unitless, default `1.2`). Width is type × `defaults.switch.widthFactor` (default `2`). Thumb is height − 2×inset (`insetFactor` × type, default `0.2`). Pair with a `Label` of the **same** `size`. On-track hover/active use the `color` slot (same steps as `Button`). Instance `width` / `height` are space tokens or CSS and override those axes. Instance `borderRadius` (theme default `999px` capsule) shapes the track; the thumb uses `min(that, 50%)` so a capsule stays round and `small` / `none` squares both. `onChange` is the action (`event.currentTarget.checked`). Native `disabled` dims like `Button`. `:focus-visible` uses the on-track chroma glow (same mix as fields). Not a layout shell.
+
+## Checkbox
+
+`<input type="checkbox">`. Native `checked` / `defaultChecked` / `onChange` — host owns the value. **`color` is the chroma slot** (`primary` / `secondary` / `accent` / status; theme default `primary`), same steps as `Button`. Empty rest / hover / active stroke is `currentColor` (wrapping `Label` ink, else panel `text.base`) until `borderColor`. Checked / indeterminate fill the `color` slot’s `.base` / `.hover` / `.active`. Rest fill is transparent until `background`. Check / dash is `defaults.checkbox.ink` (`palette.black`, same as filled `Button`) until `ink` (token/CSS or `{ base, hover, active }`; hover/active unused on the mark). Pair a visible name with `Label htmlFor`. No `label` / `children`. No `fill`. `size` is the type token; the box is that size (`1em`, square). Pair with a `Label` of the **same** `size`. Instance `width` / `height` are space tokens or CSS. Instance `borderRadius` (theme default `small`) and `borderWidth` (theme default `extraSmall`, `1px`) override the theme. `indeterminate` is the native property (dash); it does not set `checked`. `hideCheckIcon` is fill-only when checked (no check glyph); the dash still draws when indeterminate. Empty `disabled` keeps the inherited stroke (pair with a muted wrapping `Label`); checked / indeterminate still dim like `Button`. Disabled skips hover. `:focus-visible` uses the on-fill chroma glow. Not a layout shell.
+
+## Radio
+
+`<input type="radio">`. Native `name` / `value` / `checked` / `defaultChecked` / `onChange` — host owns the group. **`color` is the chroma slot** (`primary` / `secondary` / `accent` / status; theme default `primary`), same steps as `Button`. Empty rest / hover / active stroke is `currentColor` (wrapping `Label` ink, else panel `text.base`) until `borderColor`. Checked ring and inner disc use the `color` slot’s `.base` / `.hover` / `.active`. Rest fill stays transparent until `background` so the panel shows in the gap around the disc. `ink` is the disc (`PaintSteps`, same as `Checkbox`); omit = disc follows `color` including hover/active. Pair a visible name with a wrapping `Label htmlFor`. No `label` / `children`. No `fill`. `size` is the type token; the box is that size (`1em`, circle). Pair with a `Label` of the **same** `size`. Disc inset is type × `defaults.radio.insetFactor` (default `0.22`). Instance `width` / `height` are space tokens or CSS. Instance `borderRadius` (theme default `999px` circle) shapes the ring; the disc uses `min(that, 50%)`. Instance `borderWidth` (theme default `extraSmall`, `1px`) overrides the theme. Empty `disabled` keeps the inherited stroke (pair with a muted wrapping `Label`); checked still dims like `Button`. Disabled skips hover. `:focus-visible` uses the on-ring chroma glow. Not a layout shell.
+
+## Label
+
+`<label>`. Ink like `Text` (`color` / `muted` / `highlighted`). The line box hugs the glyphs (`line-height: 1` and `text-box: trim-both cap alphabetic`, same idea as `Heading`) so a `Switch` / `Checkbox` / `Radio` in a centered `Cols` row lines up. Fields use `ink` for glyphs; field `color` is focus chroma only. Caption: `label` (preferred). Custom insides: `children` — they win if both are set. Point `htmlFor` at the control’s `id`. Cursor is `pointer` when `htmlFor` / `onClick` is set or the label wraps a control (`button` / `input` / `select` / `textarea`). Wrap the control (not a sibling-only `htmlFor`) so a `disabled` target is `not-allowed` via `:has(:disabled)`. Field labels stay `pointer`; the field itself keeps `text` / `not-allowed`.
+
+---
+
+<!-- docs/components.md -->
+
+# Components
+
+One line per export from `'panelize'`. Prop details are in the exported prop types (IDE hover) and the [README](../README.md). Layout props are in [layout](layout.md). Every component takes React `style` and `css?: string` (appended last).
+
+## Layout
+
+| Component | Element        | Direct parent | Notes                                                                                    |
+| --------- | -------------- | ------------- | ---------------------------------------------------------------------------------------- |
+| `Panels`  | `div`          | any           | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
+| `Panel`   | `div`          | `Panels`      | Section. `variant` `muted` / `base` / `highlighted`. Publishes `--panelize-*`.           |
+| `Rows`    | `div` (column) | any           | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
+| `Row`     | `div`          | `Rows`        | `height` defaults to `auto`.                                                             |
+| `Cols`    | `div` (row)    | any           | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
+| `Col`     | `div`          | `Cols`        | `width` defaults to `auto`.                                                              |
+| `Grid`    | `div` (grid)   | any           | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
+| `Cell`    | `div`          | `Grid`        | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
+| `Div`     | `div`          | any           | Catch-all wrapper. No background or color.                                               |
+
+## Type
+
+| Component  | Element   | Notes                                                                                                     |
+| ---------- | --------- | --------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase`. |
+| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                              |
+| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                    |
+| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                        |
+| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                   |
+
+`color` on type and controls: `primary` / `secondary` / `accent` (brand), `danger` / `warning` / `success` / `info` (status), or raw CSS.
+
+## Controls
+
+None is a layout shell. The wrapper (`Row` / `Col` / `Cell` / `Panel` / `Div`) places them.
+
+| Component     | Element                        | Value API                                 | Notes                                                                       |
+| ------------- | ------------------------------ | ----------------------------------------- | --------------------------------------------------------------------------- |
+| `Button`      | `button`                       | `onClick`                                 | `label` or `children`. `color`, `outline`, `size`, `fill`, `disabled`.      |
+| `Chip`        | `span`                         | none                                      | Badge, not a button. `label`, `color`.                                      |
+| `Input`       | `input`                        | `value` / `onChange`                      | `color` is focus chroma. `ink` is text. Needs `Label` or `aria-label`.      |
+| `NumberInput` | `input[type=number]`           | `value` / `onChange` (string)             | Use `event.currentTarget.valueAsNumber`.                                    |
+| `Textarea`    | `textarea`                     | `value` / `onChange`                      | `resize` opt-in, `rows` default 3.                                          |
+| `Select`      | custom listbox                 | `value: string` / `onChange(value)`       | `options` and/or `Option` children. `clearable`, `required`, `emptyOption`. |
+| `MultiSelect` | custom multi listbox           | `value: string[]` / `onChange(value)`     | Count caption. Menu stays open while toggling.                              |
+| `Option`      | child of selects               | `value`                                   | Label is `children`.                                                        |
+| `Switch`      | `input[checkbox][role=switch]` | `checked` / `onChange`                    | `color` is the on track.                                                    |
+| `Checkbox`    | `input[checkbox]`              | `checked` / `onChange`                    | `indeterminate`, `hideCheckIcon`.                                           |
+| `Radio`       | `input[radio]`                 | `name` / `value` / `checked` / `onChange` | Host owns the group.                                                        |
+
+`Switch` / `Checkbox` / `Radio` and their `Label` share one `size`. These three have no `fill`, `label`, or `children`.
+
+## Theme
+
+| Export                           | Purpose                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| `createPanelizeTheme(overrides)` | Merge overrides onto the defaults. Keys: [theme keys](../examples/panelize.theme.md). |
+| `PanelizeProvider`               | `theme` (optional) and `mode` `dark` (default) / `light`.                             |
+| `usePanelizeTheme()`             | Active `colors`, `mode`, `brand`, `status`, scales, `defaults`.                       |
+| `defaultTheme`                   | What components use without a provider.                                               |
+| `palette`                        | Frozen gray ramp: `gray[0]`–`[6]`, `black`, `white`, `extraDark` … `extraLight`.      |
+
+Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`.
+
+---
+
+<!-- docs/recipes.md -->
+
+# Recipes
+
+Copyable trees that follow [composition](composition.md). Pick the closest recipe, then change copy and tokens. Every tree sits inside `PanelizeProvider` and a host with `html` / `body` / `#root { height: 100% }`.
+
+| Need                            | Recipe                                      |
+| ------------------------------- | ------------------------------------------- |
+| One scrolling page              | [Page](#page)                               |
+| Sidebar plus main               | [Sidebar and main](#sidebar-and-main)       |
+| Centered card (login, empty)    | [Centered card](#centered-card)             |
+| Label above a field             | [Form fields](#form-fields)                 |
+| Metric tiles that reflow        | [Dashboard grid](#dashboard-grid)           |
+| Header bar, content, action row | [Header, body, footer](#header-body-footer) |
+
+## Page
+
+Scroll the shell. Inner `Panel` uses `minHeight='100%'`, not `fill`.
+
+```tsx
+<Panels fill scroll='vertical'>
+  <Panel variant='muted' minHeight='100%' padding='base'>
+    <Rows gap='base'>
+      <Row>
+        <Heading level={1}>Title</Heading>
+      </Row>
+      <Row>
+        <Text muted>Long page copy…</Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
+## Sidebar and main
+
+`horizontal` + `fill` on `Panels`. Sidebar gets `width`. Main gets `flex` and owns `scroll`. `stack` is "at most this wide → column".
+
+```tsx
+<Panels horizontal fill stack='sm'>
+  <Panel variant='muted' width='14rem' padding='base'>
+    <Rows gap='small'>
+      <Row>
+        <TextLink href='/'>Home</TextLink>
+      </Row>
+      <Row>
+        <TextLink href='/settings'>Settings</TextLink>
+      </Row>
+    </Rows>
+  </Panel>
+  <Panel variant='base' flex scroll='vertical' padding='base'>
+    <Heading level={2}>Main</Heading>
+  </Panel>
+</Panels>
+```
+
+## Centered card
+
+Center on `Panels` (not scrolling). One `Panel` is the card.
+
+```tsx
+<Panels fill alignX='center' alignY='center'>
+  <Panel variant='muted' width='24rem' padding='large' borderWidth='extraSmall' borderRadius='base'>
+    <Rows gap='base'>
+      <Row>
+        <Heading level={2}>Sign in</Heading>
+      </Row>
+      <Row>
+        <Button fill label='Continue' />
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
+## Form fields
+
+Each field is a `Rows` of two `Row`s (label, control). The outer `Rows` spaces the fields. Controls take `fill` to stretch themselves; the `Row` places them.
+
+```tsx
+<Rows gap='base'>
+  <Row>
+    <Rows gap='extraSmall'>
+      <Row>
+        <Label htmlFor='email' label='Email' />
+      </Row>
+      <Row>
+        <Input id='email' type='email' fill />
+      </Row>
+    </Rows>
+  </Row>
+  <Row>
+    <Rows gap='extraSmall'>
+      <Row>
+        <Label htmlFor='plan' label='Plan' />
+      </Row>
+      <Row>
+        <Select id='plan' value={plan} onChange={setPlan} fill>
+          <Option value='hobby'>Hobby</Option>
+          <Option value='pro'>Pro</Option>
+        </Select>
+      </Row>
+    </Rows>
+  </Row>
+</Rows>
+```
+
+A toggle pairs with a **wrapping** `Label` of the same `size`:
+
+```tsx
+<Label htmlFor='auto-save'>
+  <Switch id='auto-save' defaultChecked /> Auto-save drafts
+</Label>
+```
+
+## Dashboard grid
+
+`stack='sm'` collapses to `stackCols` columns at most `sm` wide.
+
+```tsx
+<Grid numCols={3} stackCols={1} stack='md' gap='base'>
+  <Cell>
+    <Panel variant='muted' padding='base'>
+      <Text muted size='small'>
+        Users
+      </Text>
+      <Heading level={3}>1,204</Heading>
+    </Panel>
+  </Cell>
+  <Cell>
+    <Panel variant='muted' padding='base'>
+      <Text muted size='small'>
+        Revenue
+      </Text>
+      <Heading level={3}>$8.4k</Heading>
+    </Panel>
+  </Cell>
+  <Cell>
+    <Panel variant='muted' padding='base'>
+      <Text muted size='small'>
+        Errors
+      </Text>
+      <Heading level={3}>3</Heading>
+    </Panel>
+  </Cell>
+</Grid>
+```
+
+## Header, body, footer
+
+A default `Panels` is a column. The body takes `flex` and scrolls; the bars keep their size.
+
+```tsx
+<Panels fill>
+  <Panel variant='highlighted' padding='base' borderBottom='extraSmall'>
+    <Heading level={2}>Project</Heading>
+  </Panel>
+  <Panel flex scroll='vertical' padding='base'>
+    <Text>Body…</Text>
+  </Panel>
+  <Panel variant='muted' padding='base' borderTop='extraSmall'>
+    <Cols gap='small' alignX='end'>
+      <Col>
+        <Button outline label='Cancel' />
+      </Col>
+      <Col>
+        <Button label='Save' />
+      </Col>
+    </Cols>
+  </Panel>
+</Panels>
+```
+
+---
+
+<!-- examples/panelize.theme.md -->
+
+# Theme keys
+
+Every key `createPanelizeTheme` accepts. Omit any key to keep the library default.
+
+```ts
+import { createPanelizeTheme, palette } from 'panelize'
+
+export const panelizeTheme = createPanelizeTheme({
+  colors: {
+    dark: {
+      app: {
+        background: '#121212',
+        text: '#e8e8e8',
+      },
+      muted: {
+        background: '#222222',
+        text: {
+          base: palette.gray.extraLight,
+          muted: palette.gray.base,
+          highlighted: palette.white,
+        },
+        border: palette.gray.dark,
+      },
+      base: {
+        background: '#333333',
+        text: {
+          base: palette.gray.extraLight,
+          muted: palette.gray.light,
+          highlighted: palette.white,
+        },
+        border: palette.gray.base,
+      },
+      highlighted: {
+        background: palette.gray.dark,
+        text: {
+          base: palette.white,
+          muted: palette.gray.light,
+          highlighted: palette.white,
+        },
+        border: palette.gray.base,
+      },
+    },
+    light: {
+      app: {
+        background: '#fafafa',
+        text: '#121212',
+      },
+      muted: {
+        background: '#f2f2f2',
+        text: {
+          base: '#222222',
+          muted: palette.gray.base,
+          highlighted: palette.black,
+        },
+        border: palette.gray.light,
+      },
+      base: {
+        background: '#f7f7f7',
+        text: {
+          base: '#333333',
+          muted: palette.gray.base,
+          highlighted: palette.black,
+        },
+        border: palette.gray.base,
+      },
+      highlighted: {
+        background: palette.white,
+        text: {
+          base: palette.gray.dark,
+          muted: palette.gray.base,
+          highlighted: palette.black,
+        },
+        border: palette.gray.base,
+      },
+    },
+  },
+  brand: {
+    primary: {
+      base: '#ff9f2e',
+      hover: '#ffb762',
+      active: '#f1962b',
+    },
+    secondary: {
+      base: '#ff9f2e',
+      hover: '#ffb762',
+      active: '#f1962b',
+    },
+    accent: {
+      base: '#ff9f2e',
+      hover: '#ffb762',
+      active: '#f1962b',
+    },
+  },
+  status: {
+    danger: '#f2555a',
+    warning: '#ffd60a',
+    success: '#4ade80',
+    info: '#38bdf8',
+  },
+  space: {
+    none: '0rem',
+    extraSmall: '0.25rem',
+    small: '0.5rem',
+    base: '1rem',
+    large: '1.5rem',
+    extraLarge: '2rem',
+  },
+  borderWidths: {
+    none: '0',
+    extraSmall: '1px',
+    small: '2px',
+    base: '4px',
+    large: '8px',
+    extraLarge: '12px',
+  },
+  breakpoints: {
+    sm: '40rem',
+    md: '48rem',
+    lg: '64rem',
+  },
+  fontSizes: {
+    extraSmall: '0.75rem',
+    small: '0.875rem',
+    base: '1rem',
+    large: '1.25rem',
+    extraLarge: '1.5rem',
+  },
+  fontWeights: {
+    thin: '100',
+    base: '400',
+    bold: '700',
+    heavy: '800',
+  },
+  fontFamilies: {
+    base: '"Open Sans", sans-serif',
+    display: 'Montserrat, sans-serif',
+    mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  },
+  // Unitless. `Text` leading. Switch track height is type × this. Checkbox / Radio use `1em`.
+  lineHeight: 1.2,
+  radii: {
+    none: '0',
+    extraSmall: '0.125rem',
+    small: '0.25rem',
+    base: '0.5rem',
+    large: '0.75rem',
+    extraLarge: '1rem',
+  },
+  defaults: {
+    panel: {
+      padding: 'none',
+      margin: 'none',
+      borderWidth: 'none',
+      borderRadius: 'none',
+    },
+    panels: {
+      padding: 'none',
+      margin: 'none',
+      gap: 'none',
+    },
+    // No panels.alignX / alignY: Panels is a column, or `horizontal` / `stack`.
+    rows: {
+      padding: 'none',
+      margin: 'none',
+      gap: 'none',
+      alignX: 'stretch',
+      alignY: 'start',
+    },
+    row: {
+      padding: 'none',
+      margin: 'none',
+      height: 'auto',
+      borderWidth: 'none',
+      borderRadius: 'none',
+    },
+    cols: {
+      padding: 'none',
+      margin: 'none',
+      gap: 'none',
+      alignX: 'start',
+      alignY: 'stretch',
+    },
+    col: {
+      padding: 'none',
+      margin: 'none',
+      width: 'auto',
+      borderWidth: 'none',
+      borderRadius: 'none',
+    },
+    grid: {
+      padding: 'none',
+      margin: 'none',
+      gap: 'none',
+      alignX: 'stretch',
+      alignY: 'stretch',
+    },
+    cell: {
+      padding: 'none',
+      margin: 'none',
+      borderWidth: 'none',
+      borderRadius: 'none',
+    },
+    div: {
+      padding: 'none',
+      margin: 'none',
+      borderWidth: 'none',
+      borderRadius: 'none',
+    },
+    text: {
+      size: 'base',
+      weight: 'base',
+    },
+    heading: {
+      size: {
+        1: '2rem',
+        2: '1.5rem',
+        3: '1.17rem',
+        4: '1rem',
+        5: '0.83rem',
+        6: '0.67rem',
+      },
+      weight: 'bold',
+      family: 'display',
+    },
+    textLink: {
+      color: 'primary',
+      hover: 'primary',
+      hoverUnderline: false,
+    },
+    button: {
+      color: 'primary',
+      size: 'small',
+      weight: 'bold',
+      ink: palette.black,
+      hover: { color: palette.black },
+      paddingX: 'base',
+      paddingY: 'small',
+      gap: 'extraSmall',
+      borderWidth: 'extraSmall',
+      borderRadius: 'base',
+    },
+    chip: {
+      color: 'primary',
+      size: 'extraSmall',
+      weight: 'bold',
+      tint: '12%',
+      paddingX: 'base',
+      paddingY: 'extraSmall',
+      gap: 'extraSmall',
+      borderRadius: '999px',
+      uppercase: true,
+    },
+    input: {
+      color: 'primary',
+      size: 'small',
+      weight: 'base',
+      paddingX: 'base',
+      paddingY: 'small',
+      borderWidth: 'extraSmall',
+      borderRadius: 'base',
+    },
+    textarea: {
+      color: 'primary',
+      size: 'small',
+      weight: 'base',
+      paddingX: 'base',
+      paddingY: 'small',
+      borderWidth: 'extraSmall',
+      borderRadius: 'base',
+      resize: false,
+      rows: 3,
+    },
+    select: {
+      color: 'primary',
+      size: 'small',
+      weight: 'base',
+      paddingX: 'base',
+      paddingY: 'small',
+      borderWidth: 'extraSmall',
+      borderRadius: 'base',
+      listMaxHeight: '16rem',
+      listOffset: 'extraSmall',
+      optionPaddingX: 'base',
+      optionPaddingY: 'extraSmall',
+      listZIndex: 1100,
+      listShadow: '0 8px 24px rgb(0 0 0 / 35%)',
+    },
+    switch: {
+      color: 'primary',
+      size: 'base',
+      ink: palette.white,
+      widthFactor: 2,
+      insetFactor: 0.2,
+      borderRadius: '999px',
+    },
+    checkbox: {
+      color: 'primary',
+      size: 'base',
+      ink: palette.black,
+      borderWidth: 'extraSmall',
+      borderRadius: 'small',
+    },
+    radio: {
+      color: 'primary',
+      size: 'base',
+      borderWidth: 'extraSmall',
+      borderRadius: '999px',
+      insetFactor: 0.22,
+    },
+  },
+})
+```

@@ -1,0 +1,14 @@
+---
+description: Behavior contract for Panelize text primitives and controls
+globs: src/components/**
+alwaysApply: false
+---
+
+# Component contracts
+
+You are editing a component. Read [`maintainers/components.md`](../../maintainers/components.md) for the entry of the component you change before editing. Keep that entry, the README section, the JSDoc on the exported prop types, `docs/`, and `examples/panelize.theme.md` in sync with the code (see [`AGENTS.md`](../../AGENTS.md)).
+
+- Copy an existing primitive instead of inventing a pattern.
+- Color comes from the nearest `Panel` (`--panelize-*`). No hard-coded hexes; use `palette`.
+- Text and controls are not layout shells. Padding on controls is chrome.
+- Then run `npm run check`.

@@ -1,0 +1,51 @@
+# Panelize
+
+> A React layout kit. Named boxes and type are the map of the screen. `createPanelizeTheme` + `PanelizeProvider` + `usePanelizeTheme` standardize paint. Forms are bonus.
+
+This file is for agents **building apps and custom components with Panelize**. Maintainers of this repo: [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). After `npm install panelize`, read `node_modules/panelize/llms.txt` (or the package export `panelize/llms.txt`). One-file dump: [llms-full.txt](llms-full.txt).
+
+Import from `'panelize'`. Wrap the host once with `PanelizeProvider`. Do not take over the host’s styled-components `ThemeProvider`. Do not set `html` / `body` from the library. Host CSS must give the shell a height (`html`, `body`, `#root { height: 100% }` for a filled app).
+
+## How to compose (strict)
+
+Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
+
+- `Panels` is the **outer shell** of a view. Direct children are only `Panel` (one `Panel` is allowed).
+- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. It must not contain a stray `Row`, `Col`, or `Cell`.
+- Pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panel` only under `Panels`.
+- `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
+- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
+- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
+
+The library does not warn at runtime if a host ignores this. Follow it anyway — that is how the tree stays readable.
+
+## Core
+
+- [Composition](docs/composition.md): pairing, who positions, good and bad trees, which primitive to use
+- [Recipes](docs/recipes.md): copyable page, sidebar, centered card, form, dashboard grid, header/body/footer
+- [Components](docs/components.md): every export, element, parent, and value API on one page
+- Prop reference: `node_modules/panelize/dist/index.d.ts` (every prop is documented in JSDoc; read the type, not a guess)
+- [Shell (`Panels` / `Panel`)](docs/shell.md): page vs split, `fill`, `scroll`, `horizontal`, `stack`
+- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `gap`, `wrap`, `stack`, `Div`, `Grid`
+- [Controls](docs/controls.md): per-control behavior notes (chrome, defaults, edge cases)
+- [Accessibility](docs/accessibility.md): names, structure, keyboard, roles, focus
+- [Text](docs/text.md): `Text`, `Heading`, `Span`, `TextLink`, `Label`
+- [Theme and hooks](docs/theme.md): `createPanelizeTheme`, `PanelizeProvider`, `usePanelizeTheme`
+
+## Bonus
+
+- [Forms, buttons, chips](docs/forms.md): controls on top of the layout core, value ownership, `Select` / `MultiSelect`, validation
+
+## Full context
+
+- [llms-full.txt](llms-full.txt): this index, every `docs/` page, and the theme keys in one file
+
+## Host setup files
+
+- [examples/cursor-rule.mdc](examples/cursor-rule.mdc): drop into a host app’s `.cursor/rules/`
+- [examples/AGENTS.md](examples/AGENTS.md): drop into a host app’s `AGENTS.md`
+
+## Human docs
+
+- [README.md](README.md): install, quick start, fonts, goals, usage, vocabulary, caveats
+- [examples/panelize.theme.md](examples/panelize.theme.md): every key `createPanelizeTheme` accepts

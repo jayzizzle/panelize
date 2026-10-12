@@ -1,0 +1,14 @@
+---
+description: Maintain the Panelize library (not a host app)
+alwaysApply: true
+---
+
+# Maintain Panelize
+
+This repo is the library. Follow [`AGENTS.md`](../../AGENTS.md). Do not duplicate it here.
+
+- Component behavior contracts: [`maintainers/components.md`](../../maintainers/components.md).
+- Public API: `src/index.ts`. Theme: `src/theme/index.ts`. No `internal.ts` on the package entry.
+- Docs checklist in `AGENTS.md` on every public component, prop, token, or theme key. Then `npm run llms-full` if `llms.txt` / `docs/` changed.
+- No app in this repo. Your sandbox is a host that consumes `dist/` (`"panelize": "file:…/panelize"`). Do not alias library `src/`.
+- App-building composition (pairing, who positions, type primitives) is [`llms.txt`](../../llms.txt) and [`docs/composition.md`](../../docs/composition.md) — not this rule.

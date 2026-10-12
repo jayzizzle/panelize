@@ -1,0 +1,17 @@
+---
+description: Compose views with Panelize layout primitives and type
+alwaysApply: true
+---
+
+# Panelize (this app)
+
+Before writing or changing UI, read `node_modules/panelize/llms.txt` and `node_modules/panelize/docs/composition.md`.
+
+- Import from `'panelize'`. Wrap the tree with `PanelizeProvider`.
+- `Panels` is the view shell. Direct children are only `Panel` (one is allowed).
+- `Row` only under `Rows` (two or more). `Col` only under `Cols` (two or more). `Cell` only under `Grid` (two or more).
+- One band of content → `Panel` or `Div`, not a track of one item.
+- The wrapper owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`). Controls do not position themselves.
+- Visible copy uses `Text` / `Heading` / `Span` / `TextLink` / `Label`.
+- Custom components use `usePanelizeTheme` (or inherit `--panelize-*` from the nearest `Panel`). Do not invent a parallel palette.
+- Forms, buttons, and chips are bonus. Core is panels, tracks, grid, and text.
