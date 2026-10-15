@@ -29,16 +29,24 @@ body,
 2. Load the fonts you want (see [Fonts](#fonts)), wrap the app once, and compose a view.
 
 ```tsx
-import { Button, Heading, Panel, PanelizeProvider, Panels, Text } from 'panelize'
+import { Button, Heading, Panel, PanelizeProvider, Panels, Row, Rows, Text } from 'panelize'
 
 export function App() {
   return (
     <PanelizeProvider mode='dark'>
       <Panels fill>
         <Panel variant='muted' padding='base'>
-          <Heading level={1}>Hello</Heading>
-          <Text muted>Your first Panelize view.</Text>
-          <Button label='Continue' />
+          <Rows>
+            <Row>
+              <Heading level={1}>Hello</Heading>
+            </Row>
+            <Row>
+              <Text muted>Your first Panelize view.</Text>
+            </Row>
+            <Row>
+              <Button label='Continue' />
+            </Row>
+          </Rows>
         </Panel>
       </Panels>
     </PanelizeProvider>
@@ -179,6 +187,7 @@ Evergreen browsers: **Chrome / Edge 119+, Safari 16.5+, Firefox 121+**. The floo
 | Every export at a glance   | [`docs/components.md`](docs/components.md)                                                                                             |
 | Shell, layout, text, theme | [`docs/shell.md`](docs/shell.md), [`docs/layout.md`](docs/layout.md), [`docs/text.md`](docs/text.md), [`docs/theme.md`](docs/theme.md) |
 | Forms and value ownership  | [`docs/forms.md`](docs/forms.md)                                                                                                       |
+| Per-control behavior       | [`docs/controls.md`](docs/controls.md)                                                                                                 |
 | Accessibility              | [`docs/accessibility.md`](docs/accessibility.md)                                                                                       |
 | Every theme key            | [`examples/panelize.theme.md`](examples/panelize.theme.md)                                                                             |
 | Props                      | Hover in the IDE, or `dist/index.d.ts`                                                                                                 |
@@ -217,9 +226,11 @@ export const panelizeTheme = createPanelizeTheme({
 
 ```tsx
 <PanelizeProvider theme={panelizeTheme} mode={mode}>
-  <Panel variant='muted'>
-    <Text>Uses your muted background and text</Text>
-  </Panel>
+  <Panels fill>
+    <Panel variant='muted'>
+      <Text>Uses your muted background and text</Text>
+    </Panel>
+  </Panels>
 </PanelizeProvider>
 ```
 
@@ -232,15 +243,17 @@ Each panel variant has `background`, `border`, and `text.base` / `text.muted` / 
 `colors.app` is optional per scheme. `PanelizeProvider` always wraps the tree (CSS `color-scheme` from `mode`). If you pass `app.background` and/or `app.text`, those become `--panelize-app-bg` / `--panelize-app-text` on that wrapper. It does not set `html` / `body`.
 
 ```tsx
-<Panel variant='muted'>
-  <Text>Muted</Text>
-</Panel>
-<Panel variant='base'>
-  <Text>Base</Text>
-</Panel>
-<Panel variant='highlighted'>
-  <Text>Highlighted</Text>
-</Panel>
+<Panels>
+  <Panel variant='muted'>
+    <Text>Muted</Text>
+  </Panel>
+  <Panel variant='base'>
+    <Text>Base</Text>
+  </Panel>
+  <Panel variant='highlighted'>
+    <Text>Highlighted</Text>
+  </Panel>
+</Panels>
 ```
 
 CSS variables on the panel: `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`. Nested panels and non-Panel children share them.
@@ -290,8 +303,14 @@ Page (scroll the shell). Default column — do not add `horizontal`. Inner `fill
 ```tsx
 <Panels fill scroll='vertical'>
   <Panel variant='muted' minHeight='100%'>
-    <Heading level={1}>Title</Heading>
-    <Text muted>Page copy…</Text>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1}>Title</Heading>
+      </Row>
+      <Row>
+        <Text muted>Page copy…</Text>
+      </Row>
+    </Rows>
   </Panel>
 </Panels>
 ```
@@ -319,12 +338,17 @@ Split (scroll the **pane**, not the outer `Panels`). Omit `horizontal` and the p
 
 `wrap` is on `Rows` / `Cols` (not `Grid`). `stack` is on `horizontal` `Panels` / `Cols` / `Grid`: **at most** this wide → column. Not Tailwind `md:` (and-up). Default `Panels` is already a column (`stack` there is ignored). `stackCols` is column count while stacked (default 1). `spanX` / `spanY` are on `Cell`; `stack` forces `spanX` to 1.
 
+Each tree below stands alone. Every track sits inside a `Panel`, and every `Panel` inside a `Panels`.
+
 ```tsx
 <Panels fill alignX='center' alignY='center'>
   <Panel>
     <Text>Centered</Text>
   </Panel>
 </Panels>
+```
+
+```tsx
 <Panels horizontal fill stack='sm'>
   <Panel>
     <Text>Nav</Text>
@@ -333,30 +357,51 @@ Split (scroll the **pane**, not the outer `Panels`). Omit `horizontal` and the p
     <Text>Main</Text>
   </Panel>
 </Panels>
-<Rows wrap gap='small' alignX='center' alignY='space-between'>
-  <Row height='4rem'>
-    <Text>One</Text>
-  </Row>
-  <Row height='4rem'>
-    <Text>Two</Text>
-  </Row>
-</Rows>
-<Cols stack='sm' gap='small'>
-  <Col width='12rem'>
-    <Text>Side</Text>
-  </Col>
-  <Col flex>
-    <Text>Main</Text>
-  </Col>
-</Cols>
-<Grid numCols={3} stackCols={2} gap='small' stack='sm'>
-  <Cell>
-    <Text>A</Text>
-  </Cell>
-  <Cell spanX={2}>
-    <Text>B</Text>
-  </Cell>
-</Grid>
+```
+
+```tsx
+<Panels fill>
+  <Panel>
+    <Rows wrap gap='small' alignX='center' alignY='space-between'>
+      <Row height='4rem'>
+        <Text>One</Text>
+      </Row>
+      <Row height='4rem'>
+        <Text>Two</Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
+```tsx
+<Panels fill>
+  <Panel>
+    <Cols stack='sm' gap='small'>
+      <Col width='12rem'>
+        <Text>Side</Text>
+      </Col>
+      <Col flex>
+        <Text>Main</Text>
+      </Col>
+    </Cols>
+  </Panel>
+</Panels>
+```
+
+```tsx
+<Panels fill>
+  <Panel>
+    <Grid numCols={3} stackCols={2} gap='small' stack='sm'>
+      <Cell>
+        <Text>A</Text>
+      </Cell>
+      <Cell spanX={2}>
+        <Text>B</Text>
+      </Cell>
+    </Grid>
+  </Panel>
+</Panels>
 ```
 
 Color/background inherit from the parent `Panel`. Directional borders are on every layout box, including tracks (`Panels` / `Rows` / `Cols` / `Grid`).
@@ -377,9 +422,14 @@ One rem scale for padding, margin, and gap. `Button` uses the same tokens for `p
 Library default is `none` when no prop is set. Token or raw CSS length — not a unitless number. Per-side order: `padding` (or theme) → `paddingX` / `paddingY` → `paddingTop` / … (same for margin on layout).
 
 ```tsx
-<Panel padding="small" width="12rem" />
-<Panel paddingX="small" paddingTop="1rem" />
-<Button paddingX="small" paddingY="extraSmall" label="Compact" />
+<Panels>
+  <Panel padding='small' width='12rem'>
+    <Text>Padding small, 12rem wide</Text>
+  </Panel>
+  <Panel paddingX='small' paddingTop='1rem'>
+    <Button paddingX='small' paddingY='extraSmall' label='Compact' />
+  </Panel>
+</Panels>
 ```
 
 ## Borders
@@ -398,16 +448,21 @@ Every layout box (`Panels` / `Panel` / `Rows` / `Row` / `Cols` / `Col` / `Grid` 
 | `extraLarge` | `12px` | `1rem`     |
 
 ```tsx
-<Panel variant='muted' borderWidth='extraSmall' borderRadius='small' />
-<Panel borderWidth='extraSmall' borderColor='highlighted' />
-<Rows>
-  <Row borderBottom='extraSmall' borderColor='primary'>
-    <Text>Section</Text>
-  </Row>
-  <Row>
-    <Text>Next</Text>
-  </Row>
-</Rows>
+<Panels>
+  <Panel variant='muted' borderWidth='extraSmall' borderRadius='small'>
+    <Text>Outlined, rounded</Text>
+  </Panel>
+  <Panel borderWidth='extraSmall' borderColor='highlighted'>
+    <Rows>
+      <Row borderBottom='extraSmall' borderColor='primary'>
+        <Text>Section</Text>
+      </Row>
+      <Row>
+        <Text>Next</Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
 ```
 
 ## Type
@@ -420,7 +475,7 @@ Color from the nearest `Panel`: omit = `text.base`; `muted` / `highlighted`; `co
 
 `TextLink` default rest/hover/active is `brand.primary`. Nested omit size/weight/`family` → inherit. `hoverUnderline` default `false`. `:focus-visible` is `currentColor`. `defaults.textLink.hover: 'inherit'` uses panel `text.base`.
 
-`Heading` `level` picks the tag. Omit `size` = `defaults.heading.size[level]` (UA rem: `2` / `1.5` / `1.17` / `1` / `0.83` / `0.67`). Instance `size` overrides. Omit `weight` = `bold`. Omit `family` = `display`. Hosts change the bank in `createPanelizeTheme`. No UA heading margin; the line box hugs the glyphs (`line-height: 1`). Put gap on a `Row` / `Col`, not on `Heading`.
+`Heading` `level` picks the tag. Omit `size` = `defaults.heading.size[level]` (UA rem: `2` / `1.5` / `1.17` / `1` / `0.83` / `0.67`). Instance `size` overrides. Omit `weight` = `bold`. Omit `family` = `display`. Hosts change the bank in `createPanelizeTheme`. No UA heading margin; the line box hugs the glyphs (`line-height: 1`). Put spacing on the parent (`gap` on `Rows` / `Cols`, or margin or padding on a `Row` / `Col`), not on `Heading`.
 
 Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (system stack). Not CSS `display`. `Text` / `Button` / `Chip` omit = `base`. The library does not load font files. `lineHeight` is unitless `1.2`. `uppercase` is a bool. Omit `weight` on `Text` = `base` (`400`) so parent weight does not leak.
 
@@ -433,20 +488,32 @@ Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (syst
 | `extraLarge` | `1.5rem`   |          |     |
 
 ```tsx
-<Heading level={1}>
-  Title
-</Heading>
-<Text family='display' size='large' weight='bold' uppercase>
-  Display
-</Text>
-<Text muted size='small'>
-  Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
-</Text>
+<Panels fill>
+  <Panel>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1}>Title</Heading>
+      </Row>
+      <Row>
+        <Text family='display' size='large' weight='bold' uppercase>
+          Display
+        </Text>
+      </Row>
+      <Row>
+        <Text muted size='small'>
+          Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
+        </Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
 ```
 
 ## Controls
 
 Forms, buttons, and chips are bonus. Each takes `color`, `style`, and `css`; the wrapper places them. Full behavior notes: [`docs/controls.md`](docs/controls.md). Value ownership and validation: [`docs/forms.md`](docs/forms.md).
+
+Each snippet below lists separate examples of one control; they are not one tree. In a view, every control sits in a `Row` / `Col` / `Cell`, and a label with its field is a `Rows` of two `Row`s (see [Form fields](docs/recipes.md#form-fields)).
 
 ### Button
 
@@ -497,8 +564,14 @@ Native `<input>`. Rest chrome comes from the nearest `Panel`; `color` is the **f
 `Input` locked to `type="number"`. Read `event.currentTarget.valueAsNumber`. Details: [`docs/controls.md`](docs/controls.md#numberinput).
 
 ```tsx
-<Label htmlFor='count' label='Count' />
-<NumberInput id='count' min={0} max={100} step={1} defaultValue={1} fill />
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='count' label='Count' />
+  </Row>
+  <Row>
+    <NumberInput id='count' min={0} max={100} step={1} defaultValue={1} fill />
+  </Row>
+</Rows>
 <NumberInput min={0} step='any' placeholder='Amount' aria-label='Amount' />
 ```
 
@@ -517,20 +590,26 @@ Same chrome as `Input`, as a `<textarea>`. Resize is off until `resize`. Details
 Custom listbox (not a native `<select>`) with a portal menu, `clearable`, `required`, `emptyOption`, and keyboard support. Details: [`docs/controls.md`](docs/controls.md#select).
 
 ```tsx
-<Label htmlFor='country' label='Country' />
-<Select
-  id='country'
-  placeholder='Select country'
-  value={country}
-  onChange={setCountry}
-  clearable
-  selectedAtTop
-  emptyOption
-  fill
->
-  <Option value='us'>United States</Option>
-  <Option value='mx'>Mexico</Option>
-</Select>
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='country' label='Country' />
+  </Row>
+  <Row>
+    <Select
+      id='country'
+      placeholder='Select country'
+      value={country}
+      onChange={setCountry}
+      clearable
+      selectedAtTop
+      emptyOption
+      fill
+    >
+      <Option value='us'>United States</Option>
+      <Option value='mx'>Mexico</Option>
+    </Select>
+  </Row>
+</Rows>
 ```
 
 ### MultiSelect
@@ -538,20 +617,26 @@ Custom listbox (not a native `<select>`) with a portal menu, `clearable`, `requi
 Custom multi listbox. Shows `N selected`; the menu stays open while toggling. Details: [`docs/controls.md`](docs/controls.md#multiselect).
 
 ```tsx
-<Label htmlFor='countries' label='Countries' />
-<MultiSelect
-  id='countries'
-  placeholder='Select countries'
-  value={countries}
-  onChange={setCountries}
-  clearable
-  selectedAtTop
-  fill
->
-  <Option value='us'>United States</Option>
-  <Option value='ca'>Canada</Option>
-  <Option value='jp'>Japan</Option>
-</MultiSelect>
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='countries' label='Countries' />
+  </Row>
+  <Row>
+    <MultiSelect
+      id='countries'
+      placeholder='Select countries'
+      value={countries}
+      onChange={setCountries}
+      clearable
+      selectedAtTop
+      fill
+    >
+      <Option value='us'>United States</Option>
+      <Option value='ca'>Canada</Option>
+      <Option value='jp'>Japan</Option>
+    </MultiSelect>
+  </Row>
+</Rows>
 ```
 
 ### Switch
@@ -559,12 +644,14 @@ Custom multi listbox. Shows `N selected`; the menu stays open while toggling. De
 `<input role="switch">`. Wrap it in a `Label` of the same `size`. Details: [`docs/controls.md`](docs/controls.md#switch).
 
 ```tsx
-<Label htmlFor='auto-save' label='Auto-save drafts' />
-<Switch
-  id='auto-save'
-  defaultChecked
-  onChange={(event) => setAutoSave(event.currentTarget.checked)}
-/>
+<Label htmlFor='auto-save'>
+  <Switch
+    id='auto-save'
+    defaultChecked
+    onChange={(event) => setAutoSave(event.currentTarget.checked)}
+  />{' '}
+  Auto-save drafts
+</Label>
 <Switch color='secondary' defaultChecked aria-label='Secondary' />
 <Switch size='large' color='accent' borderRadius='small' aria-label='Accent' />
 <Switch color='success' defaultChecked aria-label='Live' />
@@ -576,12 +663,14 @@ Custom multi listbox. Shows `N selected`; the menu stays open while toggling. De
 `<input type="checkbox">` with `indeterminate` and `hideCheckIcon`. Wrap it in a `Label` of the same `size`. Details: [`docs/controls.md`](docs/controls.md#checkbox).
 
 ```tsx
-<Label htmlFor='sms' label='SMS notifications' />
-<Checkbox
-  id='sms'
-  defaultChecked
-  onChange={(event) => setSms(event.currentTarget.checked)}
-/>
+<Label htmlFor='sms'>
+  <Checkbox
+    id='sms'
+    defaultChecked
+    onChange={(event) => setSms(event.currentTarget.checked)}
+  />{' '}
+  SMS notifications
+</Label>
 <Checkbox color='secondary' defaultChecked aria-label='Secondary' />
 <Checkbox color='accent' aria-label='Accent' />
 <Checkbox indeterminate aria-label='Select all' />
@@ -616,8 +705,14 @@ Custom multi listbox. Shows `N selected`; the menu stays open while toggling. De
 `<label>` with `Text`-like ink. Wrap `Switch` / `Checkbox` / `Radio` in it. Details: [`docs/controls.md`](docs/controls.md#label).
 
 ```tsx
-<Label htmlFor='email' label='Email' />
-<Input id='email' type='email' />
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='email' label='Email' />
+  </Row>
+  <Row>
+    <Input id='email' type='email' />
+  </Row>
+</Rows>
 <Label htmlFor='sms' size='small'>
   <Checkbox id='sms' size='small' /> SMS notifications
 </Label>

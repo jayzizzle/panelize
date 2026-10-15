@@ -4,14 +4,16 @@ Build views and custom components from layout primitives. The JSX should read as
 
 ## Pairing (bidirectional)
 
-| Item    | Direct parent | That parent’s direct children |
-| ------- | ------------- | ----------------------------- |
-| `Panel` | `Panels`      | only `Panel` (one is allowed) |
-| `Row`   | `Rows`        | only `Row`, **two or more**   |
-| `Col`   | `Cols`        | only `Col`, **two or more**   |
-| `Cell`  | `Grid`        | only `Cell`, **two or more**  |
+| Item    | Direct parent                                             | That parent’s direct children |
+| ------- | --------------------------------------------------------- | ----------------------------- |
+| `Panel` | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | only `Panel` (one is allowed) |
+| `Row`   | `Rows`                                                    | only `Row`, **two or more**   |
+| `Col`   | `Cols`                                                    | only `Col`, **two or more**   |
+| `Cell`  | `Grid`                                                    | only `Cell`, **two or more**  |
 
 `Row` must not sit on `Panel`, `Div`, `Col`, `Cell`, or `Grid`. Same idea for `Col` and `Cell`. Fragments and `.map` still have to produce those children.
+
+A `Panel` normally sits under `Panels`. It may also sit inside a `Cell`, `Col`, or `Row` when that spot needs its own surface (`variant`), as a dashboard tile does. If the content can use the surrounding surface, skip the `Panel` and put `Rows` / `Cols` straight in the `Cell`.
 
 Custom components are **not** substitutes for `Row` / `Col` / `Cell`. Build them from primitives, then place the custom component inside a `Row`, `Col`, `Cell`, `Panel`, or `Div`.
 
@@ -23,7 +25,9 @@ Custom components are **not** substitutes for `Row` / `Col` / `Cell`. Build them
 
 A `Panel` is an **open** section. It is not a homogeneous track.
 
-If there is only one band of content, do not wrap it in `Rows` of one `Row` (or `Cols` of one `Col`, or `Grid` of one `Cell`). Put that content in the `Panel` or a `Div`.
+**One item** goes straight in the `Panel` or a `Div`. Do not wrap it in `Rows` of one `Row` (or `Cols` of one `Col`, or `Grid` of one `Cell`).
+
+**Two or more items** (a heading, a line of copy, a button) belong in a track: `Rows` when they stack, `Cols` when they sit side by side, `Grid` when they sit in two dimensions. The track owns order, `gap`, and alignment. Loose siblings in a `Panel` or `Div` leave that to chance and make the JSX stop reading as the picture. The same goes for a `Div` with two or more children.
 
 ## Who positions
 
@@ -76,6 +80,26 @@ One section, one heading — no `Rows`:
 </Panels>
 ```
 
+One section, several items — a `Rows` with one `Row` each:
+
+```tsx
+<Panels fill>
+  <Panel variant='muted' padding='base'>
+    <Rows>
+      <Row>
+        <Heading level={1}>Hello</Heading>
+      </Row>
+      <Row>
+        <Text muted>Your first Panelize view.</Text>
+      </Row>
+      <Row>
+        <Button label='Continue' />
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
 ## Bad
 
 Each block is wrong. The comment says why.
@@ -111,6 +135,23 @@ Each block is wrong. The comment says why.
 ```
 
 ```tsx
+// Two or more items loose in a Panel: put them in Rows (stacked) or Cols (side by side)
+<Panel>
+  <Heading level={1}>Hello</Heading>
+  <Text muted>Your first Panelize view.</Text>
+  <Button label='Continue' />
+</Panel>
+```
+
+```tsx
+// Same for a Div with two or more children
+<Div>
+  <Text muted>Users</Text>
+  <Heading level={3}>1,204</Heading>
+</Div>
+```
+
+```tsx
 // Copy is not in a type primitive, so it misses --panelize-text
 <Panel>Hello</Panel>
 ```
@@ -134,5 +175,6 @@ Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
 | A horizontal list of items  | `Cols` of two or more `Col`                        |
 | A two-dimensional layout    | `Grid` of two or more `Cell`                       |
 | One wrapper or one band     | `Div`, or the `Panel` itself                       |
+| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box     |
 | Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label` |
 | Copyable starting points    | [recipes](recipes.md)                              |

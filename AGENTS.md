@@ -13,6 +13,8 @@ If you add or change a **public** component, prop, token, or theme key, update *
 3. JSDoc on exported prop types (IDE hover is the API).
 4. `llms.txt` and `docs/` when composition rules or the public surface agents should use change. A new public component also gets a row in `docs/components.md`. Then `npm run llms-full` (CI fails if `llms-full.txt` is stale).
 
+`tests/composition.test.ts` checks every `tsx` block in `README.md`, `llms.txt`, and `docs/` against the composition rules (loose siblings in a `Panel` / `Div`, `Row` / `Col` / `Cell` outside their track, a track of one). Start a deliberate counter-example with a `//` comment line to exempt it.
+
 Do not let README, the example theme, `defaultTheme`, and `docs/` / `llms.txt` drift. Published package includes `llms.txt`, `llms-full.txt`, `docs/`, `README.md`, `LICENSE`, `CHANGELOG.md`, `examples/`, and `bin/` (not only `dist/`).
 
 `bin/panelize.mjs` is the `npx panelize init-agents` command. Keep it dependency-free plain Node ESM. It copies `examples/AGENTS.md` and `examples/cursor-rule.mdc` into a host, so edit those files, not the script, to change what hosts get. It must never overwrite host content outside its marked section; `tests/init-agents.test.ts` covers that.

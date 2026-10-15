@@ -4,6 +4,10 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+### Changed
+
+- Docs: two or more items in a `Panel` or `Div` now belong in `Rows` / `Cols` / `Grid`, not as loose siblings. Added the rule to `docs/composition.md`, `llms.txt`, and the agent templates. README and `docs/` examples now show whole trees (`Panels` > `Panel` > track), label-and-field pairs as `Rows`, and wrapping `Label`s for `Switch` / `Checkbox`. A `Panel` may sit in a `Cell` / `Col` / `Row` when that spot needs its own surface. Fixed a few contradictions (`gap` is not on `Div`, `Row`, or `Col`; the dashboard recipe said `stack='sm'` but used `md`; `docs/controls.md` was missing from the README table). JSDoc text and examples on `Panel` and `Div` changed; no runtime code.
+
 ## [0.1.2] - 2026-10-12
 
 No change to the components, props, or theme.
