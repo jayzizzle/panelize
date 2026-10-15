@@ -18,6 +18,8 @@ This repo is the **Panelize library**. There is no app in-tree. To look at UI, c
 | `npm run llms-full`   | Rebuilds `llms-full.txt` from `llms.txt` and `docs/`                               |
 | `npm run format`      | Prettier                                                                           |
 
+A pre-commit hook (Husky + lint-staged, installed by `npm install`) runs ESLint and Prettier on the files you staged. If you staged `llms.txt` or a page in `docs/`, it also rebuilds and stages `llms-full.txt`. Bypass it with `git commit --no-verify` (CI still runs everything).
+
 `bin/panelize.mjs` is the `panelize init-agents` command hosts run to wire up their agents. Try it from a scratch project with `node ../panelize/bin/panelize.mjs init-agents --dry-run`.
 
 ## Agents
@@ -49,4 +51,5 @@ Maintainers only. Publishing uses npm trusted publishing (OIDC) and staged relea
 
 - User-visible changes get a line under `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md).
 - Keep a change to one concern. Add or update a test in `tests/` when behavior changes.
+- CI (`check (22)` and `check (24)`) must pass before a pull request merges into `main`.
 - Match the style in `AGENTS.md` (Prettier, `~/src/...` imports, `simple-import-sort`).

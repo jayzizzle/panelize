@@ -66,12 +66,12 @@ Build views and custom components from layout primitives. The JSX should read as
 
 ## Pairing (bidirectional)
 
-| Item    | Direct parent                                             | That parent’s direct children |
-| ------- | --------------------------------------------------------- | ----------------------------- |
-| `Panel` | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | only `Panel` (one is allowed) |
-| `Row`   | `Rows`                                                    | only `Row`, **two or more**   |
-| `Col`   | `Cols`                                                    | only `Col`, **two or more**   |
-| `Cell`  | `Grid`                                                    | only `Cell`, **two or more**  |
+| Item    | Direct parent                                             | That parent’s direct children           |
+| ------- | --------------------------------------------------------- | --------------------------------------- |
+| `Panel` | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | `Panels`: only `Panel` (one is allowed) |
+| `Row`   | `Rows`                                                    | only `Row`, **two or more**             |
+| `Col`   | `Cols`                                                    | only `Col`, **two or more**             |
+| `Cell`  | `Grid`                                                    | only `Cell`, **two or more**            |
 
 `Row` must not sit on `Panel`, `Div`, `Col`, `Cell`, or `Grid`. Same idea for `Col` and `Cell`. Fragments and `.map` still have to produce those children.
 
