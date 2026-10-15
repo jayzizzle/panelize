@@ -4,7 +4,7 @@
 
 Default `Panels` is an **absolute** column (`inset` when `fill`). `relative` opt-in. `horizontal` is a row (sidebar + main). Overlay shells belong on `Panels`, not `Rows fill`.
 
-Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`.
+Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`. A `Panel` may also sit inside a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 
 `Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants.
 
@@ -29,8 +29,14 @@ Default column — do not add `horizontal`. Do not put `fill` on the inner `Pane
 ```tsx
 <Panels fill scroll='vertical'>
   <Panel variant='muted' minHeight='100%' padding='base'>
-    <Heading level={1}>Title</Heading>
-    <Text muted>Long page copy…</Text>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1}>Title</Heading>
+      </Row>
+      <Row>
+        <Text muted>Long page copy…</Text>
+      </Row>
+    </Rows>
   </Panel>
 </Panels>
 ```

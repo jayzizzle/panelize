@@ -8,9 +8,10 @@ alwaysApply: false
 Before writing or changing UI, read `node_modules/panelize/llms.txt` and `node_modules/panelize/docs/composition.md`.
 
 - Import from `'panelize'`. Wrap the tree with `PanelizeProvider`.
-- `Panels` is the view shell. Direct children are only `Panel` (one is allowed).
+- `Panels` is the view shell. Direct children are only `Panel` (one is allowed). A `Panel` may also sit in a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 - `Row` only under `Rows` (two or more). `Col` only under `Cols` (two or more). `Cell` only under `Grid` (two or more).
 - One band of content → `Panel` or `Div`, not a track of one item.
+- Two or more items in a `Panel` or `Div` → `Rows` (stacked), `Cols` (side by side), or `Grid`, not loose siblings.
 - The wrapper owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`). Controls do not position themselves.
 - Visible copy uses `Text` / `Heading` / `Span` / `TextLink` / `Label`.
 - Custom components use `usePanelizeTheme` (or inherit `--panelize-*` from the nearest `Panel`). Do not invent a parallel palette.

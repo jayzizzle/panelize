@@ -4,6 +4,16 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-10-14
+
+Docs only. No change to the components, props, or theme.
+
+### Changed
+
+- Docs: two or more items in a `Panel` or `Div` now belong in `Rows` / `Cols` / `Grid`, not as loose siblings. Added the rule to `docs/composition.md`, `llms.txt`, and the agent templates. README and `docs/` examples now show whole trees (`Panels` > `Panel` > track), label-and-field pairs as `Rows`, and wrapping `Label`s for `Switch` / `Checkbox`. A `Panel` may sit in a `Cell` / `Col` / `Row` when that spot needs its own surface. Fixed a few contradictions (`gap` is not on `Div`, `Row`, or `Col`; the dashboard recipe said `stack='sm'` but used `md`; `docs/controls.md` was missing from the README table). JSDoc text and examples on `Panel` and `Div` changed.
+- A new test checks every `tsx` example in the README, `llms.txt`, and `docs/` against these rules.
+- Contributors: a pre-commit hook (Husky + lint-staged) lints and formats staged files and keeps `llms-full.txt` in sync with `llms.txt` and `docs/`. Pull requests into `main` need CI to pass.
+
 ## [0.1.2] - 2026-10-12
 
 No change to the components, props, or theme.
@@ -46,7 +56,8 @@ First public release.
 - The library does not load font files and has no scheme toggle. The host owns both.
 - Next.js App Router needs the styled-components registry (see the README).
 
-[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/jayzizzle/panelize/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/jayzizzle/panelize/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jayzizzle/panelize/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/jayzizzle/panelize/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jayzizzle/panelize/releases/tag/v0.1.0

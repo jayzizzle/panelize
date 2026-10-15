@@ -10,7 +10,7 @@ Visible copy must use a type primitive so it inherits the nearest `Panel` (`--pa
 | `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit.                                                         |
 | `Label`    | `label`   | Caption for controls. Prefer `label` prop; `htmlFor` + control `id`. Wrap `Switch` / `Checkbox` / `Radio`.                    |
 
-None of these is a layout shell: no `fill` / `flex` / padding. Gap belongs on `Rows` / `Cols` / `Grid` / `Div`.
+None of these is a layout shell: no `fill` / `flex` / padding. Spacing belongs on the parent: `gap` on `Rows` / `Cols` / `Grid`, or margin or padding on a `Row` / `Col` / `Cell` / `Div`.
 
 `muted` / `highlighted` use the panel `text` object. `color='primary'` / `secondary` / `accent` → `brand.*.base`. `color='danger'` / `warning` / `success` / `info` → `status.*.base`. Raw CSS `color` wins. If both flags, `highlighted` wins.
 

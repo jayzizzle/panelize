@@ -4,17 +4,17 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 
 ## Layout
 
-| Component | Element        | Direct parent | Notes                                                                                    |
-| --------- | -------------- | ------------- | ---------------------------------------------------------------------------------------- |
-| `Panels`  | `div`          | any           | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
-| `Panel`   | `div`          | `Panels`      | Section. `variant` `muted` / `base` / `highlighted`. Publishes `--panelize-*`.           |
-| `Rows`    | `div` (column) | any           | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
-| `Row`     | `div`          | `Rows`        | `height` defaults to `auto`.                                                             |
-| `Cols`    | `div` (row)    | any           | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
-| `Col`     | `div`          | `Cols`        | `width` defaults to `auto`.                                                              |
-| `Grid`    | `div` (grid)   | any           | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
-| `Cell`    | `div`          | `Grid`        | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
-| `Div`     | `div`          | any           | Catch-all wrapper. No background or color.                                               |
+| Component | Element        | Direct parent                                             | Notes                                                                                    |
+| --------- | -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `Panels`  | `div`          | any                                                       | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
+| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. One item, or a track for several.   |
+| `Rows`    | `div` (column) | any                                                       | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
+| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`.                                                             |
+| `Cols`    | `div` (row)    | any                                                       | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
+| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`.                                                              |
+| `Grid`    | `div` (grid)   | any                                                       | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
+| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
+| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). No background or color.                |
 
 ## Type
 

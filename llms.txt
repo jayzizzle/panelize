@@ -13,9 +13,10 @@ Import from `'panelize'`. Wrap the host once with `PanelizeProvider`. Do not tak
 Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
 
 - `Panels` is the **outer shell** of a view. Direct children are only `Panel` (one `Panel` is allowed).
-- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. It must not contain a stray `Row`, `Col`, or `Cell`.
-- Pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panel` only under `Panels`.
+- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. One item sits directly in it; several go in a track. It must not contain a stray `Row`, `Col`, or `Cell`.
+- Track pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panels` holds only `Panel`. A `Panel` normally sits under `Panels`, and may also sit in a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 - `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
+- The reverse holds too. **Two or more** items in a `Panel` or `Div` (heading, copy, button) go in `Rows` (stacked), `Cols` (side by side), or `Grid`, never loose siblings. The track owns order and `gap`.
 - The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
 - Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
 

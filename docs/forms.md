@@ -1,6 +1,6 @@
 # Forms, buttons, chips (bonus)
 
-Core is layout + text. These controls exist so a host can ship a complete kit. Still compose them **inside** `Panel` / `Row` / `Col` / `Cell` / `Div`. The wrapper places them.
+Core is layout + text. These controls exist so a host can ship a complete kit. Still compose them **inside** a `Panel` / `Row` / `Col` / `Cell` / `Div`. One control sits directly in its wrapper; several go in a `Rows` / `Cols`. The wrapper places them.
 
 Per-control behavior notes: [controls](controls.md). Full prop list: exported types in `node_modules/panelize/dist/index.d.ts` (JSDoc on every prop). Human detail: [README.md](../README.md). Copyable field layout: [recipes](recipes.md#form-fields). Keyboard and labelling rules: [accessibility](accessibility.md).
 
@@ -31,11 +31,19 @@ The host owns every value. Nothing here keeps state you did not ask for.
 ## `Select` and `MultiSelect`
 
 ```tsx
-<Label htmlFor='country' label='Country' />
-<Select id='country' value={country} onChange={setCountry} placeholder='Choose' clearable>
-  <Option value='us'>United States</Option>
-  <Option value='mx' disabled>Mexico</Option>
-</Select>
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='country' label='Country' />
+  </Row>
+  <Row>
+    <Select id='country' value={country} onChange={setCountry} placeholder='Choose' clearable>
+      <Option value='us'>United States</Option>
+      <Option value='mx' disabled>
+        Mexico
+      </Option>
+    </Select>
+  </Row>
+</Rows>
 ```
 
 - Options: `<Option value>` children and/or `options={[{ value, label, disabled? }]}`. Children win on a duplicate `value`.

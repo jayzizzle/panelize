@@ -15,9 +15,10 @@ Import from `'panelize'`. Wrap the host once with `PanelizeProvider`. Do not tak
 Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
 
 - `Panels` is the **outer shell** of a view. Direct children are only `Panel` (one `Panel` is allowed).
-- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. It must not contain a stray `Row`, `Col`, or `Cell`.
-- Pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panel` only under `Panels`.
+- `Panel` is a **section**. It may contain tracks, `Div`, type, controls, nested `Panels`, and custom components. One item sits directly in it; several go in a track. It must not contain a stray `Row`, `Col`, or `Cell`.
+- Track pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panels` holds only `Panel`. A `Panel` normally sits under `Panels`, and may also sit in a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 - `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
+- The reverse holds too. **Two or more** items in a `Panel` or `Div` (heading, copy, button) go in `Rows` (stacked), `Cols` (side by side), or `Grid`, never loose siblings. The track owns order and `gap`.
 - The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
 - Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
 
@@ -65,14 +66,16 @@ Build views and custom components from layout primitives. The JSX should read as
 
 ## Pairing (bidirectional)
 
-| Item    | Direct parent | That parent’s direct children |
-| ------- | ------------- | ----------------------------- |
-| `Panel` | `Panels`      | only `Panel` (one is allowed) |
-| `Row`   | `Rows`        | only `Row`, **two or more**   |
-| `Col`   | `Cols`        | only `Col`, **two or more**   |
-| `Cell`  | `Grid`        | only `Cell`, **two or more**  |
+| Item    | Direct parent                                             | That parent’s direct children           |
+| ------- | --------------------------------------------------------- | --------------------------------------- |
+| `Panel` | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | `Panels`: only `Panel` (one is allowed) |
+| `Row`   | `Rows`                                                    | only `Row`, **two or more**             |
+| `Col`   | `Cols`                                                    | only `Col`, **two or more**             |
+| `Cell`  | `Grid`                                                    | only `Cell`, **two or more**            |
 
 `Row` must not sit on `Panel`, `Div`, `Col`, `Cell`, or `Grid`. Same idea for `Col` and `Cell`. Fragments and `.map` still have to produce those children.
+
+A `Panel` normally sits under `Panels`. It may also sit inside a `Cell`, `Col`, or `Row` when that spot needs its own surface (`variant`), as a dashboard tile does. If the content can use the surrounding surface, skip the `Panel` and put `Rows` / `Cols` straight in the `Cell`.
 
 Custom components are **not** substitutes for `Row` / `Col` / `Cell`. Build them from primitives, then place the custom component inside a `Row`, `Col`, `Cell`, `Panel`, or `Div`.
 
@@ -84,7 +87,9 @@ Custom components are **not** substitutes for `Row` / `Col` / `Cell`. Build them
 
 A `Panel` is an **open** section. It is not a homogeneous track.
 
-If there is only one band of content, do not wrap it in `Rows` of one `Row` (or `Cols` of one `Col`, or `Grid` of one `Cell`). Put that content in the `Panel` or a `Div`.
+**One item** goes straight in the `Panel` or a `Div`. Do not wrap it in `Rows` of one `Row` (or `Cols` of one `Col`, or `Grid` of one `Cell`).
+
+**Two or more items** (a heading, a line of copy, a button) belong in a track: `Rows` when they stack, `Cols` when they sit side by side, `Grid` when they sit in two dimensions. The track owns order, `gap`, and alignment. Loose siblings in a `Panel` or `Div` leave that to chance and make the JSX stop reading as the picture. The same goes for a `Div` with two or more children.
 
 ## Who positions
 
@@ -137,6 +142,26 @@ One section, one heading — no `Rows`:
 </Panels>
 ```
 
+One section, several items — a `Rows` with one `Row` each:
+
+```tsx
+<Panels fill>
+  <Panel variant='muted' padding='base'>
+    <Rows>
+      <Row>
+        <Heading level={1}>Hello</Heading>
+      </Row>
+      <Row>
+        <Text muted>Your first Panelize view.</Text>
+      </Row>
+      <Row>
+        <Button label='Continue' />
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
+
 ## Bad
 
 Each block is wrong. The comment says why.
@@ -172,6 +197,23 @@ Each block is wrong. The comment says why.
 ```
 
 ```tsx
+// Two or more items loose in a Panel: put them in Rows (stacked) or Cols (side by side)
+<Panel>
+  <Heading level={1}>Hello</Heading>
+  <Text muted>Your first Panelize view.</Text>
+  <Button label='Continue' />
+</Panel>
+```
+
+```tsx
+// Same for a Div with two or more children
+<Div>
+  <Text muted>Users</Text>
+  <Heading level={3}>1,204</Heading>
+</Div>
+```
+
+```tsx
 // Copy is not in a type primitive, so it misses --panelize-text
 <Panel>Hello</Panel>
 ```
@@ -195,6 +237,7 @@ Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
 | A horizontal list of items  | `Cols` of two or more `Col`                        |
 | A two-dimensional layout    | `Grid` of two or more `Cell`                       |
 | One wrapper or one band     | `Div`, or the `Panel` itself                       |
+| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box     |
 | Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label` |
 | Copyable starting points    | [recipes](recipes.md)                              |
 
@@ -208,7 +251,7 @@ Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
 
 Default `Panels` is an **absolute** column (`inset` when `fill`). `relative` opt-in. `horizontal` is a row (sidebar + main). Overlay shells belong on `Panels`, not `Rows fill`.
 
-Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`.
+Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`. A `Panel` may also sit inside a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 
 `Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants.
 
@@ -233,8 +276,14 @@ Default column — do not add `horizontal`. Do not put `fill` on the inner `Pane
 ```tsx
 <Panels fill scroll='vertical'>
   <Panel variant='muted' minHeight='100%' padding='base'>
-    <Heading level={1}>Title</Heading>
-    <Text muted>Long page copy…</Text>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1}>Title</Heading>
+      </Row>
+      <Row>
+        <Text muted>Long page copy…</Text>
+      </Row>
+    </Rows>
   </Panel>
 </Panels>
 ```
@@ -285,37 +334,55 @@ Space / size / border tokens: `none` | `extraSmall` | `small` | `base` | `large`
 
 ## `Div`
 
-Catch-all box (spacing, size, border, `fill` / `flex`). No background or color of its own. Use it when you need one wrapper and a `Rows` of one `Row` would be wrong. Direct children: anything except a stray `Row` / `Col` / `Cell` (those still belong under their tracks).
+Catch-all box (spacing, size, border, `fill` / `flex`). No background or color of its own. Use it when you need one wrapper and a `Rows` of one `Row` would be wrong. It holds **one** item. Two or more go in `Rows` / `Cols` / `Grid`. Direct children: anything except a stray `Row` / `Col` / `Cell` (those still belong under their tracks). No `gap`; spacing between items comes from the track.
 
 ## Tracks
 
+Each tree stands alone. A track sits inside a `Panel`, and a `Panel` inside a `Panels`.
+
 ```tsx
-<Rows gap='small' alignX='center'>
-  <Row>
-    <Text>One</Text>
-  </Row>
-  <Row>
-    <Text>Two</Text>
-  </Row>
-</Rows>
+<Panels fill>
+  <Panel>
+    <Rows gap='small' alignX='center'>
+      <Row>
+        <Text>One</Text>
+      </Row>
+      <Row>
+        <Text>Two</Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
+```
 
-<Cols stack='sm' gap='small'>
-  <Col width='12rem'>
-    <Text>Side</Text>
-  </Col>
-  <Col flex>
-    <Text>Main</Text>
-  </Col>
-</Cols>
+```tsx
+<Panels fill>
+  <Panel>
+    <Cols stack='sm' gap='small'>
+      <Col width='12rem'>
+        <Text>Side</Text>
+      </Col>
+      <Col flex>
+        <Text>Main</Text>
+      </Col>
+    </Cols>
+  </Panel>
+</Panels>
+```
 
-<Grid numCols={3} stackCols={2} gap='small' stack='sm'>
-  <Cell>
-    <Text>A</Text>
-  </Cell>
-  <Cell spanX={2}>
-    <Text>B</Text>
-  </Cell>
-</Grid>
+```tsx
+<Panels fill>
+  <Panel>
+    <Grid numCols={3} stackCols={2} gap='small' stack='sm'>
+      <Cell>
+        <Text>A</Text>
+      </Cell>
+      <Cell spanX={2}>
+        <Text>B</Text>
+      </Cell>
+    </Grid>
+  </Panel>
+</Panels>
 ```
 
 `Cell` has no `width` / `height` / `fill`. Size comes from the grid tracks and `spanX` / `spanY`. `Cell` is `min-width` / `min-height` 0 so content can shrink.
@@ -340,7 +407,7 @@ Visible copy must use a type primitive so it inherits the nearest `Panel` (`--pa
 | `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit.                                                         |
 | `Label`    | `label`   | Caption for controls. Prefer `label` prop; `htmlFor` + control `id`. Wrap `Switch` / `Checkbox` / `Radio`.                    |
 
-None of these is a layout shell: no `fill` / `flex` / padding. Gap belongs on `Rows` / `Cols` / `Grid` / `Div`.
+None of these is a layout shell: no `fill` / `flex` / padding. Spacing belongs on the parent: `gap` on `Rows` / `Cols` / `Grid`, or margin or padding on a `Row` / `Col` / `Cell` / `Div`.
 
 `muted` / `highlighted` use the panel `text` object. `color='primary'` / `secondary` / `accent` → `brand.*.base`. `color='danger'` / `warning` / `success` / `info` → `status.*.base`. Raw CSS `color` wins. If both flags, `highlighted` wins.
 
@@ -413,10 +480,16 @@ function Stat({ label, value }: { label: string; value: string }) {
   const { colors } = usePanelizeTheme()
   return (
     <Div padding='small' borderWidth='extraSmall' borderColor={colors.base.border}>
-      <Text muted size='small'>
-        {label}
-      </Text>
-      <Text highlighted>{value}</Text>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            {label}
+          </Text>
+        </Row>
+        <Row>
+          <Text highlighted>{value}</Text>
+        </Row>
+      </Rows>
     </Div>
   )
 }
@@ -487,7 +560,7 @@ createPanelizeTheme({
 
 # Forms, buttons, chips (bonus)
 
-Core is layout + text. These controls exist so a host can ship a complete kit. Still compose them **inside** `Panel` / `Row` / `Col` / `Cell` / `Div`. The wrapper places them.
+Core is layout + text. These controls exist so a host can ship a complete kit. Still compose them **inside** a `Panel` / `Row` / `Col` / `Cell` / `Div`. One control sits directly in its wrapper; several go in a `Rows` / `Cols`. The wrapper places them.
 
 Per-control behavior notes: [controls](controls.md). Full prop list: exported types in `node_modules/panelize/dist/index.d.ts` (JSDoc on every prop). Human detail: [README.md](../README.md). Copyable field layout: [recipes](recipes.md#form-fields). Keyboard and labelling rules: [accessibility](accessibility.md).
 
@@ -518,11 +591,19 @@ The host owns every value. Nothing here keeps state you did not ask for.
 ## `Select` and `MultiSelect`
 
 ```tsx
-<Label htmlFor='country' label='Country' />
-<Select id='country' value={country} onChange={setCountry} placeholder='Choose' clearable>
-  <Option value='us'>United States</Option>
-  <Option value='mx' disabled>Mexico</Option>
-</Select>
+<Rows gap='extraSmall'>
+  <Row>
+    <Label htmlFor='country' label='Country' />
+  </Row>
+  <Row>
+    <Select id='country' value={country} onChange={setCountry} placeholder='Choose' clearable>
+      <Option value='us'>United States</Option>
+      <Option value='mx' disabled>
+        Mexico
+      </Option>
+    </Select>
+  </Row>
+</Rows>
 ```
 
 - Options: `<Option value>` children and/or `options={[{ value, label, disabled? }]}`. Children win on a duplicate `value`.
@@ -660,17 +741,17 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 
 ## Layout
 
-| Component | Element        | Direct parent | Notes                                                                                    |
-| --------- | -------------- | ------------- | ---------------------------------------------------------------------------------------- |
-| `Panels`  | `div`          | any           | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
-| `Panel`   | `div`          | `Panels`      | Section. `variant` `muted` / `base` / `highlighted`. Publishes `--panelize-*`.           |
-| `Rows`    | `div` (column) | any           | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
-| `Row`     | `div`          | `Rows`        | `height` defaults to `auto`.                                                             |
-| `Cols`    | `div` (row)    | any           | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
-| `Col`     | `div`          | `Cols`        | `width` defaults to `auto`.                                                              |
-| `Grid`    | `div` (grid)   | any           | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
-| `Cell`    | `div`          | `Grid`        | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
-| `Div`     | `div`          | any           | Catch-all wrapper. No background or color.                                               |
+| Component | Element        | Direct parent                                             | Notes                                                                                    |
+| --------- | -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `Panels`  | `div`          | any                                                       | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
+| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. One item, or a track for several.   |
+| `Rows`    | `div` (column) | any                                                       | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
+| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`.                                                             |
+| `Cols`    | `div` (row)    | any                                                       | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
+| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`.                                                              |
+| `Grid`    | `div` (grid)   | any                                                       | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
+| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
+| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). No background or color.                |
 
 ## Type
 
@@ -795,7 +876,7 @@ Center on `Panels` (not scrolling). One `Panel` is the card.
 
 ## Form fields
 
-Each field is a `Rows` of two `Row`s (label, control). The outer `Rows` spaces the fields. Controls take `fill` to stretch themselves; the `Row` places them.
+Each field is a `Rows` of two `Row`s (label, control). The outer `Rows` spaces the fields. Controls take `fill` to stretch themselves; the `Row` places them. Place the form inside a `Panel`.
 
 ```tsx
 <Rows gap='base'>
@@ -835,32 +916,50 @@ A toggle pairs with a **wrapping** `Label` of the same `size`:
 
 ## Dashboard grid
 
-`stack='sm'` collapses to `stackCols` columns at most `sm` wide.
+`stack='md'` collapses to `stackCols` columns at most `md` wide. Each tile is a `Panel` because it wants its own surface (`variant='muted'`). If a tile can use the surrounding surface, put the `Rows` straight in the `Cell` and drop the `Panel`.
 
 ```tsx
 <Grid numCols={3} stackCols={1} stack='md' gap='base'>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Users
-      </Text>
-      <Heading level={3}>1,204</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Users
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>1,204</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Revenue
-      </Text>
-      <Heading level={3}>$8.4k</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Revenue
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>$8.4k</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Errors
-      </Text>
-      <Heading level={3}>3</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Errors
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>3</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
 </Grid>

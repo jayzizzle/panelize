@@ -113,9 +113,10 @@ export type PanelProps = ComponentPropsWithoutRef<'div'> &
   }
 
 /**
- * Section surface. Direct child of `Panels` only. Open inside: tracks, `Div`, type, controls,
- * nested `Panels`, custom components. Not a stray `Row` / `Col` / `Cell`. `variant` paints
- * `--panelize-*` for descendants.
+ * Section surface. Direct child of `Panels`, or of a `Cell` / `Col` / `Row` when that spot needs
+ * its own surface. Open inside: tracks, `Div`, type, controls, nested `Panels`, custom
+ * components. One item sits directly in it; two or more go in `Rows` / `Cols` / `Grid`. Not a
+ * stray `Row` / `Col` / `Cell`. `variant` paints `--panelize-*` for descendants.
  *
  * @example
  * ```tsx

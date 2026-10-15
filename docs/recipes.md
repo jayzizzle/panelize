@@ -73,7 +73,7 @@ Center on `Panels` (not scrolling). One `Panel` is the card.
 
 ## Form fields
 
-Each field is a `Rows` of two `Row`s (label, control). The outer `Rows` spaces the fields. Controls take `fill` to stretch themselves; the `Row` places them.
+Each field is a `Rows` of two `Row`s (label, control). The outer `Rows` spaces the fields. Controls take `fill` to stretch themselves; the `Row` places them. Place the form inside a `Panel`.
 
 ```tsx
 <Rows gap='base'>
@@ -113,32 +113,50 @@ A toggle pairs with a **wrapping** `Label` of the same `size`:
 
 ## Dashboard grid
 
-`stack='sm'` collapses to `stackCols` columns at most `sm` wide.
+`stack='md'` collapses to `stackCols` columns at most `md` wide. Each tile is a `Panel` because it wants its own surface (`variant='muted'`). If a tile can use the surrounding surface, put the `Rows` straight in the `Cell` and drop the `Panel`.
 
 ```tsx
 <Grid numCols={3} stackCols={1} stack='md' gap='base'>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Users
-      </Text>
-      <Heading level={3}>1,204</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Users
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>1,204</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Revenue
-      </Text>
-      <Heading level={3}>$8.4k</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Revenue
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>$8.4k</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
   <Cell>
     <Panel variant='muted' padding='base'>
-      <Text muted size='small'>
-        Errors
-      </Text>
-      <Heading level={3}>3</Heading>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            Errors
+          </Text>
+        </Row>
+        <Row>
+          <Heading level={3}>3</Heading>
+        </Row>
+      </Rows>
     </Panel>
   </Cell>
 </Grid>

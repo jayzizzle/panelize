@@ -84,17 +84,25 @@ export type DivProps = ComponentPropsWithoutRef<'div'> &
 
 /**
  * Catch-all box (spacing, size, border, `fill` / `flex`). No surface paint. Use when a single
- * wrapper is enough — not a substitute for `Row` / `Col` / `Cell` (those still belong under
- * their tracks).
+ * wrapper around one item is enough. Two or more items go in `Rows` / `Cols` / `Grid`. Not a
+ * substitute for `Row` / `Col` / `Cell` (those still belong under their tracks).
  *
  * @example
  * ```tsx
- * <Panel padding='base'>
- *   <Div maxWidth='24rem'>
- *     <Heading level={2}>Card</Heading>
- *     <Text muted>Body</Text>
- *   </Div>
- * </Panel>
+ * <Panels fill>
+ *   <Panel padding='base'>
+ *     <Div maxWidth='24rem'>
+ *       <Rows>
+ *         <Row>
+ *           <Heading level={2}>Card</Heading>
+ *         </Row>
+ *         <Row>
+ *           <Text muted>Body</Text>
+ *         </Row>
+ *       </Rows>
+ *     </Div>
+ *   </Panel>
+ * </Panels>
  * ```
  */
 export function Div(props: DivProps) {

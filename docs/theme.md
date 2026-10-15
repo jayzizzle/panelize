@@ -52,10 +52,16 @@ function Stat({ label, value }: { label: string; value: string }) {
   const { colors } = usePanelizeTheme()
   return (
     <Div padding='small' borderWidth='extraSmall' borderColor={colors.base.border}>
-      <Text muted size='small'>
-        {label}
-      </Text>
-      <Text highlighted>{value}</Text>
+      <Rows>
+        <Row>
+          <Text muted size='small'>
+            {label}
+          </Text>
+        </Row>
+        <Row>
+          <Text highlighted>{value}</Text>
+        </Row>
+      </Rows>
     </Div>
   )
 }
