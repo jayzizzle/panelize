@@ -5,6 +5,7 @@ import {
   type BoxEdges,
   boxEdgesCss,
   flexItemCss,
+  placeContentCss,
   resolveBorderColor,
   resolveBorderEdges,
   resolveBoxEdges,
@@ -23,6 +24,7 @@ import {
   type BorderColorValue,
   type BoxSpacingProps,
   type DirectionalBorderProps,
+  type PlaceProps,
   type SelfAlignProps,
   type SizeProps,
   type SpaceValue,
@@ -41,6 +43,8 @@ type StyledDivProps = {
   $borderColor: string
   $alignX?: AlignValue
   $alignY?: AlignValue
+  $placeX?: AlignValue
+  $placeY?: AlignValue
   $trackKind?: TrackKind
   $customCss?: string
 }
@@ -55,6 +59,7 @@ const StyledDiv = styled.div<StyledDivProps>`
   border-color: ${({ $borderColor }) => $borderColor};
   ${({ $flex }) => flexItemCss($flex, true)}
   ${({ $trackKind, $alignX, $alignY }) => selfAlignCss($trackKind, $alignX, $alignY)}
+  ${({ $placeX, $placeY }) => placeContentCss(true, $placeX, $placeY)}
   ${({ $customCss }) => $customCss ?? ''}
 `
 
@@ -62,6 +67,7 @@ export type DivProps = ComponentPropsWithoutRef<'div'> &
   BoxSpacingProps &
   SizeProps &
   SelfAlignProps &
+  PlaceProps &
   DirectionalBorderProps & {
     /**
      * Grow in a flex parent (`flex: 1 1 0%`, `min-width` / `min-height` 0). Until then this box is
@@ -83,8 +89,8 @@ export type DivProps = ComponentPropsWithoutRef<'div'> &
   }
 
 /**
- * Catch-all box (spacing, size, border, `fill` / `flex`). No surface paint. Use when a single
- * wrapper around one item is enough. Two or more items go in `Rows` / `Cols` / `Grid`. Not a
+ * Catch-all box (spacing, size, border, `fill` / `flex`). No surface paint. `placeX` / `placeY`
+ * place the one item (or a nested track). Two or more items go in `Rows` / `Cols` / `Grid`. Not a
  * substitute for `Row` / `Col` / `Cell` (those still belong under their tracks).
  *
  * @example
@@ -112,6 +118,8 @@ export function Div(props: DivProps) {
     fill,
     alignX,
     alignY,
+    placeX,
+    placeY,
     css: customCss,
     borderWidth,
     borderX,
@@ -146,6 +154,8 @@ export function Div(props: DivProps) {
       }
       $alignX={alignX}
       $alignY={alignY}
+      $placeX={placeX}
+      $placeY={placeY}
       $trackKind={trackKind}
       $customCss={customCss}
       {...dom}

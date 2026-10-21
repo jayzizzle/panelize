@@ -5,6 +5,7 @@ import {
   type BoxEdges,
   boxEdgesCss,
   flexItemCss,
+  placeContentCss,
   resolveBorderColor,
   resolveBorderEdges,
   resolveBoxEdges,
@@ -23,6 +24,7 @@ import {
   type BorderColorValue,
   type BoxSpacingProps,
   type DirectionalBorderProps,
+  type PlaceProps,
   type SelfAlignProps,
   type SizeProps,
   type SpaceValue,
@@ -39,6 +41,8 @@ type StyledColProps = {
   $borderColor: string
   $alignX?: AlignValue
   $alignY?: AlignValue
+  $placeX?: AlignValue
+  $placeY?: AlignValue
   $trackKind?: TrackKind
   $customCss?: string
 }
@@ -53,6 +57,7 @@ const StyledCol = styled.div<StyledColProps>`
   border-color: ${({ $borderColor }) => $borderColor};
   ${({ $flex }) => flexItemCss($flex, true)}
   ${({ $trackKind, $alignX, $alignY }) => selfAlignCss($trackKind, $alignX, $alignY)}
+  ${({ $placeX, $placeY }) => placeContentCss(true, $placeX, $placeY)}
   ${({ $customCss }) => $customCss ?? ''}
 `
 
@@ -60,6 +65,7 @@ export type ColProps = ComponentPropsWithoutRef<'div'> &
   BoxSpacingProps &
   SizeProps &
   SelfAlignProps &
+  PlaceProps &
   DirectionalBorderProps & {
     /**
      * Grow in a flex parent (`flex: 1 1 0%`, `min-width` / `min-height` 0). Until then this box is
@@ -84,7 +90,8 @@ export type ColProps = ComponentPropsWithoutRef<'div'> &
 
 /**
  * One column in a `Cols` track. Direct child of `Cols` only. Place content here. This box owns
- * `flex` / `width` / `alignY` — children do not position themselves.
+ * `flex` / `width` / `alignY` (its place in the track) and `placeX` / `placeY` (contents).
+ * Children do not position themselves.
  *
  * @example
  * ```tsx
@@ -105,6 +112,8 @@ export function Col(props: ColProps) {
     fill,
     alignX,
     alignY,
+    placeX,
+    placeY,
     css: customCss,
     borderWidth,
     borderX,
@@ -135,6 +144,8 @@ export function Col(props: ColProps) {
       $borderColor={resolveBorderColor(borderColor, 'base', colors, brand, status)}
       $alignX={alignX}
       $alignY={alignY}
+      $placeX={placeX}
+      $placeY={placeY}
       $trackKind={trackKind}
       $customCss={customCss}
       {...dom}

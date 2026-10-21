@@ -40,7 +40,7 @@ Dedupe `react` / `react-dom` / `styled-components` to the host’s `node_modules
 
 ## Layout vocabulary
 
-The prop table (`fill`, `flex`, `alignX` / `alignY`, `scroll`, `stack`, `gap`, spans, borders, tokens) is [`docs/layout.md`](docs/layout.md) and [`docs/shell.md`](docs/shell.md). Do not copy it here. Change the behavior and those docs together.
+The prop table (`fill`, `flex`, `alignX` / `alignY`, `placeX` / `placeY`, `scroll`, `stack`, `gap`, spans, borders, tokens) is [`docs/layout.md`](docs/layout.md) and [`docs/shell.md`](docs/shell.md). Do not copy it here. Change the behavior and those docs together.
 
 ## Color bank
 

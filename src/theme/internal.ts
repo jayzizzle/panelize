@@ -11,6 +11,7 @@ export {
   flexItemCss,
   gridItemAlignCss,
   gridSelfAlignCss,
+  placeContentCss,
   resolveAlignValue,
   stackedMainAlign,
 } from '~/src/theme/flex'

@@ -103,6 +103,7 @@ export {
   panelTextRoles,
   type PanelVariant,
   panelVariants,
+  type PlaceProps,
   type RadioDefaults,
   type ScrollValue,
   scrollValues,

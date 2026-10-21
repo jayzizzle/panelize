@@ -334,7 +334,9 @@ Split (scroll the **pane**, not the outer `Panels`). Omit `horizontal` and the p
 
 `Div` is a catch-all box (spacing, size, border, `fill` / `flex`). It does not set `background` or `color`.
 
-`alignX` / `alignY` are **screen** axes. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit. Unused flex axis is a no-op. `space-*` is flex main; `baseline` is flex cross.
+`alignX` / `alignY` are **screen** axes. They place **this box** in its parent. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit. Unused flex axis is a no-op. `space-*` is flex main; `baseline` is flex cross.
+
+`placeX` / `placeY` place **contents** inside `Col` / `Row` / `Cell` / `Panel` / `Div`. Omit both = block flow. Either one makes that box a flex container (`Col` / `Panel` / `Div` / `Cell` column; `Row` row). Use them to center one child (an image, a custom widget), not to stack two siblings — those still go in a track.
 
 `wrap` is on `Rows` / `Cols` (not `Grid`). `stack` is on `horizontal` `Panels` / `Cols` / `Grid`: **at most** this wide → column. Not Tailwind `md:` (and-up). Default `Panels` is already a column (`stack` there is ignored). `stackCols` is column count while stacked (default 1). `spanX` / `spanY` are on `Cell`; `stack` forces `spanX` to 1.
 

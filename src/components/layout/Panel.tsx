@@ -5,6 +5,7 @@ import {
   type BoxEdges,
   boxEdgesCss,
   flexItemCss,
+  placeContentCss,
   resolveBorderColor,
   resolveBorderEdges,
   resolveBoxEdges,
@@ -26,6 +27,7 @@ import {
   type DirectionalBorderProps,
   type PanelColors,
   type PanelVariant,
+  type PlaceProps,
   type ScrollProps,
   type ScrollValue,
   type SelfAlignProps,
@@ -54,6 +56,8 @@ type StyledPanelProps = {
   $fill?: boolean
   $alignX?: AlignValue
   $alignY?: AlignValue
+  $placeX?: AlignValue
+  $placeY?: AlignValue
   $trackKind?: TrackKind
   $customCss?: string
 }
@@ -78,6 +82,7 @@ const StyledPanel = styled.div<StyledPanelProps>`
   ${({ $flex }) => flexItemCss($flex, true)}
   ${({ $scroll }) => scrollCss($scroll)}
   ${({ $trackKind, $alignX, $alignY }) => selfAlignCss($trackKind, $alignX, $alignY)}
+  ${({ $placeX, $placeY }) => placeContentCss(true, $placeX, $placeY)}
   ${({ $customCss }) => $customCss ?? ''}
 `
 
@@ -85,6 +90,7 @@ export type PanelProps = ComponentPropsWithoutRef<'div'> &
   BoxSpacingProps &
   SizeProps &
   SelfAlignProps &
+  PlaceProps &
   ScrollProps &
   DirectionalBorderProps & {
     /**
@@ -116,7 +122,8 @@ export type PanelProps = ComponentPropsWithoutRef<'div'> &
  * Section surface. Direct child of `Panels`, or of a `Cell` / `Col` / `Row` when that spot needs
  * its own surface. Open inside: tracks, `Div`, type, controls, nested `Panels`, custom
  * components. One item sits directly in it; two or more go in `Rows` / `Cols` / `Grid`. Not a
- * stray `Row` / `Col` / `Cell`. `variant` paints `--panelize-*` for descendants.
+ * stray `Row` / `Col` / `Cell`. `placeX` / `placeY` place contents. `variant` paints
+ * `--panelize-*` for descendants.
  *
  * @example
  * ```tsx
@@ -134,6 +141,8 @@ export function Panel(props: PanelProps) {
     fill,
     alignX,
     alignY,
+    placeX,
+    placeY,
     variant = 'base',
     css: customCss,
     borderWidth,
@@ -168,6 +177,8 @@ export function Panel(props: PanelProps) {
       $scroll={scroll}
       $alignX={alignX}
       $alignY={alignY}
+      $placeX={placeX}
+      $placeY={placeY}
       $trackKind={trackKind}
       $customCss={customCss}
       {...dom}

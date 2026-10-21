@@ -31,7 +31,7 @@ A `Panel` is an **open** section. It is not a homogeneous track.
 
 ## Who positions
 
-The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.” `align` on type is `text-align` (glyphs in the line), not place.
+The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on the layout primitives — not on `Text`, `Button`, or a custom widget so it can “nudge itself.” `alignX` / `alignY` place **this box** in its parent. `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` place **contents** inside that box (one child, or a nested track). Tracks (`Panels` / `Rows` / `Cols` / `Grid`) have no `place*`. `align` on type is `text-align` (glyphs in the line), not place.
 
 `Text` / `Heading` / `Span` / `TextLink` / `Label` are not layout shells (no `fill` / `flex` / padding). Controls may take `fill` to stretch the control itself; the parent still decides where the control sits.
 
@@ -163,18 +163,19 @@ Each block is wrong. The comment says why.
 </Col>
 ```
 
-Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
+Center the **box** with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`. Center **contents** with `placeX` / `placeY` on that wrapper.
 
 ## Which primitive?
 
-| You want                    | Use                                                |
-| --------------------------- | -------------------------------------------------- |
-| The outer frame of a view   | `Panels`                                           |
-| A surface (nav, main, card) | `Panel`                                            |
-| A vertical list of bands    | `Rows` of two or more `Row`                        |
-| A horizontal list of items  | `Cols` of two or more `Col`                        |
-| A two-dimensional layout    | `Grid` of two or more `Cell`                       |
-| One wrapper or one band     | `Div`, or the `Panel` itself                       |
-| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box     |
-| Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label` |
-| Copyable starting points    | [recipes](recipes.md)                              |
+| You want                    | Use                                                             |
+| --------------------------- | --------------------------------------------------------------- |
+| The outer frame of a view   | `Panels`                                                        |
+| A surface (nav, main, card) | `Panel`                                                         |
+| A vertical list of bands    | `Rows` of two or more `Row`                                     |
+| A horizontal list of items  | `Cols` of two or more `Col`                                     |
+| A two-dimensional layout    | `Grid` of two or more `Cell`                                    |
+| One wrapper or one band     | `Div`, or the `Panel` itself                                    |
+| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box                  |
+| Center one child in a slot  | `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` |
+| Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label`              |
+| Copyable starting points    | [recipes](recipes.md)                                           |

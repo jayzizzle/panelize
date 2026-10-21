@@ -7,6 +7,7 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 ### Added
 
 - Type primitives (`Text`, `Heading`, `Span`, `TextLink`, `Label`) take `align` (`start` / `end` / `center` / `justify`) for `text-align`. Omit = unset. Not layout `alignX` / `alignY`.
+- Item boxes (`Col`, `Row`, `Cell`, `Panel`, `Div`) take `placeX` / `placeY` to place contents inside the box. Omit both = block flow. Either one makes the box a flex container (`Col` / `Panel` / `Div` / `Cell` column; `Row` row). Not `alignX` / `alignY` (those place the box in its parent).
 
 ## [0.1.3] - 2026-10-14
 

@@ -6,7 +6,7 @@ Default `Panels` is an **absolute** column (`inset` when `fill`). `relative` opt
 
 Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`. A `Panel` may also sit inside a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 
-`Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants.
+`Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants. `placeX` / `placeY` place contents inside the `Panel` (one child, or a nested track). They do not replace `alignX` / `alignY` on `Panels`.
 
 ## Host height
 
