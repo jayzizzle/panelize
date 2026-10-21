@@ -8,6 +8,7 @@ import {
   type FontFamilyToken,
   type FontSizeValue,
   type FontWeightValue,
+  type TextAlignValue,
   usePanelizeTheme,
 } from '~/src/theme'
 
@@ -23,7 +24,7 @@ const StyledText = styled.p<TextTypographyVars>`
   ${({ $customCss }) => $customCss ?? ''}
 `
 
-export type TextProps = ComponentPropsWithoutRef<'p'> & {
+export type TextProps = Omit<ComponentPropsWithoutRef<'p'>, 'align'> & {
   /** Font size token (`small`) or CSS. Theme default `base`. */
   size?: FontSizeValue
   /**
@@ -45,6 +46,11 @@ export type TextProps = ComponentPropsWithoutRef<'p'> & {
   underlined?: boolean
   /** `text-transform: uppercase`. Default off. */
   uppercase?: boolean
+  /**
+   * `text-align` of the glyphs (`start` / `end` / `center` / `justify`). Omit = unset.
+   * Not place — that stays on the wrapper (`alignX`).
+   */
+  align?: TextAlignValue
   /** Extra CSS appended to this component’s styles. */
   css?: string
 }
@@ -69,6 +75,7 @@ export function Text(props: TextProps) {
     italic,
     underlined,
     uppercase,
+    align,
     css: customCss,
     ...dom
   } = props
@@ -96,6 +103,7 @@ export function Text(props: TextProps) {
         $italic={italic}
         $underlined={underlined}
         $uppercase={uppercase}
+        $align={align}
         $customCss={customCss}
         {...dom}
       />

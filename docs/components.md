@@ -18,13 +18,13 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 
 ## Type
 
-| Component  | Element   | Notes                                                                                                     |
-| ---------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase`. |
-| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                              |
-| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                    |
-| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                        |
-| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                   |
+| Component  | Element   | Notes                                                                                                               |
+| ---------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase` / `align`. |
+| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                                        |
+| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                              |
+| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                                  |
+| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                             |
 
 `color` on type and controls: `primary` / `secondary` / `accent` (brand), `danger` / `warning` / `success` / `info` (status), or raw CSS.
 
@@ -58,4 +58,4 @@ None is a layout shell. The wrapper (`Row` / `Col` / `Cell` / `Panel` / `Div`) p
 | `defaultTheme`                   | What components use without a provider.                                               |
 | `palette`                        | Frozen gray ramp: `gray[0]`–`[6]`, `black`, `white`, `extraDark` … `extraLight`.      |
 
-Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`.
+Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`. Type `align`: `start` | `end` | `center` | `justify`.

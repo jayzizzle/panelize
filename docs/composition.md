@@ -31,7 +31,7 @@ A `Panel` is an **open** section. It is not a homogeneous track.
 
 ## Who positions
 
-The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.”
+The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.” `align` on type is `text-align` (glyphs in the line), not place.
 
 `Text` / `Heading` / `Span` / `TextLink` / `Label` are not layout shells (no `fill` / `flex` / padding). Controls may take `fill` to stretch the control itself; the parent still decides where the control sits.
 

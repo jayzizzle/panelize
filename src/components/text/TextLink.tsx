@@ -8,6 +8,7 @@ import {
   type FontFamilyToken,
   type FontSizeValue,
   type FontWeightValue,
+  type TextAlignValue,
   usePanelizeTheme,
 } from '~/src/theme'
 
@@ -50,7 +51,7 @@ const StyledTextLink = styled.a<StyledTextLinkProps>`
   ${({ $customCss }) => $customCss ?? ''}
 `
 
-export type TextLinkProps = ComponentPropsWithoutRef<'a'> & {
+export type TextLinkProps = Omit<ComponentPropsWithoutRef<'a'>, 'align'> & {
   /** Font size token (`small`) or CSS. Nested in `Text` / `Span` with omit = inherit. Else theme `base`. */
   size?: FontSizeValue
   /**
@@ -72,6 +73,11 @@ export type TextLinkProps = ComponentPropsWithoutRef<'a'> & {
   underlined?: boolean
   /** `text-transform: uppercase`. Default off. */
   uppercase?: boolean
+  /**
+   * `text-align` of the glyphs (`start` / `end` / `center` / `justify`). Omit = unset.
+   * Not place — that stays on the wrapper (`alignX`). Inline until the link is wide enough.
+   */
+  align?: TextAlignValue
   /** Extra CSS appended to this component’s styles. */
   css?: string
 }
@@ -98,6 +104,7 @@ export function TextLink(props: TextLinkProps) {
     italic,
     underlined,
     uppercase,
+    align,
     css: customCss,
     ...dom
   } = props
@@ -136,6 +143,7 @@ export function TextLink(props: TextLinkProps) {
       $underlined={underlined}
       $hoverUnderline={defaults.textLink.hoverUnderline}
       $uppercase={uppercase}
+      $align={align}
       $customCss={customCss}
       {...dom}
     />

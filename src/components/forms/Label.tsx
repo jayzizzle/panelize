@@ -8,6 +8,7 @@ import {
   type FontFamilyToken,
   type FontSizeValue,
   type FontWeightValue,
+  type TextAlignValue,
   usePanelizeTheme,
 } from '~/src/theme'
 
@@ -43,7 +44,7 @@ const StyledLabel = styled.label<StyledLabelProps>`
   ${({ $customCss }) => $customCss ?? ''}
 `
 
-export type LabelProps = ComponentPropsWithRef<'label'> & {
+export type LabelProps = Omit<ComponentPropsWithRef<'label'>, 'align'> & {
   /** Font size token or CSS. Theme default `base` (`defaults.text`). */
   size?: FontSizeValue
   /**
@@ -65,6 +66,11 @@ export type LabelProps = ComponentPropsWithRef<'label'> & {
   underlined?: boolean
   /** `text-transform: uppercase`. Default off. */
   uppercase?: boolean
+  /**
+   * `text-align` of the glyphs (`start` / `end` / `center` / `justify`). Omit = unset.
+   * Not place — that stays on the wrapper (`alignX`).
+   */
+  align?: TextAlignValue
   /**
    * Visible caption. Preferred over a string as `children`.
    * Custom insides (`Span` / host icons) go in `children`; those win if both are set.
@@ -95,6 +101,7 @@ export function Label(props: LabelProps) {
     italic,
     underlined,
     uppercase,
+    align,
     label,
     css: customCss,
     children,
@@ -124,6 +131,7 @@ export function Label(props: LabelProps) {
         $italic={italic}
         $underlined={underlined}
         $uppercase={uppercase}
+        $align={align}
         $clickable={typeof onClick === 'function'}
         $customCss={customCss}
         onClick={onClick}

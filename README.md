@@ -477,6 +477,8 @@ Color from the nearest `Panel`: omit = `text.base`; `muted` / `highlighted`; `co
 
 `Heading` `level` picks the tag. Omit `size` = `defaults.heading.size[level]` (UA rem: `2` / `1.5` / `1.17` / `1` / `0.83` / `0.67`). Instance `size` overrides. Omit `weight` = `bold`. Omit `family` = `display`. Hosts change the bank in `createPanelizeTheme`. No UA heading margin; the line box hugs the glyphs (`line-height: 1`). Put spacing on the parent (`gap` on `Rows` / `Cols`, or margin or padding on a `Row` / `Col`), not on `Heading`.
 
+`align` is `text-align` (`start` / `end` / `center` / `justify`). Omit = unset. It is not place — `alignX` / `alignY` stay on the wrapper. A `Text` / `Heading` is a block as wide as its parent when the row stretches, so `alignX` on the `Row` will not move the glyphs.
+
 Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (system stack). Not CSS `display`. `Text` / `Button` / `Chip` omit = `base`. The library does not load font files. `lineHeight` is unitless `1.2`. `uppercase` is a bool. Omit `weight` on `Text` = `base` (`400`) so parent weight does not leak.
 
 | `size`       | Default    | `weight` | CSS |
@@ -500,7 +502,7 @@ Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (syst
         </Text>
       </Row>
       <Row>
-        <Text muted size='small'>
+        <Text muted size='small' align='center'>
           Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
         </Text>
       </Row>

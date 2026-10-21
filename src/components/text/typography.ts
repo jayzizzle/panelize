@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react'
 import { css } from 'styled-components'
 
+import { type TextAlignValue } from '~/src/theme'
+
 export type TextStyleValue = {
   family: string
   size: string
@@ -23,6 +25,7 @@ export type TextTypographyVars = {
   $italic?: boolean
   $underlined?: boolean
   $uppercase?: boolean
+  $align?: TextAlignValue
   $customCss?: string
 }
 
@@ -50,6 +53,12 @@ export const textTypographyCss = css<TextTypographyVars>`
     $uppercase
       ? css`
           text-transform: uppercase;
+        `
+      : ''}
+  ${({ $align }) =>
+    $align
+      ? css`
+          text-align: ${$align};
         `
       : ''}
 `

@@ -94,6 +94,15 @@ describe('type', () => {
     expect(screen.getByRole('link', { name: 'link' })).toHaveAttribute('href', '/x')
     expect(screen.getByText('label').tagName).toBe('LABEL')
   })
+
+  it('applies text-align from align', () => {
+    renderInShell(
+      <Text align='center' data-testid='aligned'>
+        centered
+      </Text>,
+    )
+    expect(screen.getByTestId('aligned')).toHaveStyle({ textAlign: 'center' })
+  })
 })
 
 describe('controls', () => {

@@ -8,6 +8,7 @@ import {
   type FontFamilyToken,
   type FontSizeValue,
   type FontWeightValue,
+  type TextAlignValue,
   usePanelizeTheme,
 } from '~/src/theme'
 
@@ -24,7 +25,7 @@ const StyledSpan = styled.span<TextTypographyVars>`
   ${({ $customCss }) => $customCss ?? ''}
 `
 
-export type SpanProps = ComponentPropsWithoutRef<'span'> & {
+export type SpanProps = Omit<ComponentPropsWithoutRef<'span'>, 'align'> & {
   /** Font size token (`small`) or CSS. Nested in `Text` with omit = inherit that `Text`. Else theme `base`. */
   size?: FontSizeValue
   /**
@@ -46,6 +47,11 @@ export type SpanProps = ComponentPropsWithoutRef<'span'> & {
   underlined?: boolean
   /** `text-transform: uppercase`. Default off (inherits parent transform). */
   uppercase?: boolean
+  /**
+   * `text-align` of the glyphs (`start` / `end` / `center` / `justify`). Omit = unset.
+   * Not place — that stays on the wrapper (`alignX`). Inline until the span is wide enough.
+   */
+  align?: TextAlignValue
   /** Extra CSS appended to this component’s styles. */
   css?: string
 }
@@ -72,6 +78,7 @@ export function Span(props: SpanProps) {
     italic,
     underlined,
     uppercase,
+    align,
     css: customCss,
     ...dom
   } = props
@@ -112,6 +119,7 @@ export function Span(props: SpanProps) {
         $italic={italic}
         $underlined={underlined}
         $uppercase={uppercase}
+        $align={align}
         $customCss={customCss}
         {...dom}
       />

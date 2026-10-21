@@ -93,7 +93,7 @@ A `Panel` is an **open** section. It is not a homogeneous track.
 
 ## Who positions
 
-The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.”
+The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.” `align` on type is `text-align` (glyphs in the line), not place.
 
 `Text` / `Heading` / `Span` / `TextLink` / `Label` are not layout shells (no `fill` / `flex` / padding). Controls may take `fill` to stretch the control itself; the parent still decides where the control sits.
 
@@ -401,7 +401,7 @@ Visible copy must use a type primitive so it inherits the nearest `Panel` (`--pa
 
 | Component  | Element   | Notes                                                                                                                         |
 | ---------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | Body. Omit color → panel `text.base`.                                                                                         |
+| `Text`     | `p`       | Body. Omit color → panel `text.base`. `align` is `text-align`.                                                                |
 | `Heading`  | `h1`–`h6` | Required `level` `1`–`6`. Omit `size` → theme heading size for that level. Omit `weight` → `bold`. Omit `family` → `display`. |
 | `Span`     | `span`    | Nested in `Text` / `Span`: omit size/weight/`family` → inherit. Omit color → CSS `inherit`.                                   |
 | `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit.                                                         |
@@ -409,17 +409,29 @@ Visible copy must use a type primitive so it inherits the nearest `Panel` (`--pa
 
 None of these is a layout shell: no `fill` / `flex` / padding. Spacing belongs on the parent: `gap` on `Rows` / `Cols` / `Grid`, or margin or padding on a `Row` / `Col` / `Cell` / `Div`.
 
+`align` is `text-align` (`start` / `end` / `center` / `justify`). Omit = unset. It is not place — `alignX` / `alignY` stay on the wrapper. A stretched `Text` / `Heading` is as wide as its parent, so `alignX` on the `Row` will not move the glyphs; set `align` on the type. `Span` and `TextLink` are inline, so `align` only shows when the box is wider than the glyphs.
+
 `muted` / `highlighted` use the panel `text` object. `color='primary'` / `secondary` / `accent` → `brand.*.base`. `color='danger'` / `warning` / `success` / `info` → `status.*.base`. Raw CSS `color` wins. If both flags, `highlighted` wins.
 
 Size: `fontSizes` tokens or CSS. Weight: omit on `Text` = `base` (400). Family: `base` / `display` / `mono`. The library does not load font files.
 
 ```tsx
-<Heading level={1} uppercase color='primary'>
-  Panelize
-</Heading>
-<Text muted size='small'>
-  Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
-</Text>
+<Panels fill>
+  <Panel>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1} uppercase color='primary' align='center'>
+          Panelize
+        </Heading>
+      </Row>
+      <Row>
+        <Text muted size='small' align='center'>
+          Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
+        </Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
 ```
 
 ---
@@ -755,13 +767,13 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 
 ## Type
 
-| Component  | Element   | Notes                                                                                                     |
-| ---------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase`. |
-| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                              |
-| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                    |
-| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                        |
-| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                   |
+| Component  | Element   | Notes                                                                                                               |
+| ---------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase` / `align`. |
+| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                                        |
+| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                              |
+| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                                  |
+| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                             |
 
 `color` on type and controls: `primary` / `secondary` / `accent` (brand), `danger` / `warning` / `success` / `info` (status), or raw CSS.
 
@@ -795,7 +807,7 @@ None is a layout shell. The wrapper (`Row` / `Col` / `Cell` / `Panel` / `Div`) p
 | `defaultTheme`                   | What components use without a provider.                                               |
 | `palette`                        | Frozen gray ramp: `gray[0]`–`[6]`, `black`, `white`, `extraDark` … `extraLight`.      |
 
-Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`.
+Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`. Type `align`: `start` | `end` | `center` | `justify`.
 
 ---
 

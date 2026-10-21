@@ -120,6 +120,8 @@ export {
   type StatusToken,
   statusTokens,
   type SwitchDefaults,
+  type TextAlignValue,
+  textAlignValues,
   type TextareaDefaults,
   type TextLinkDefaults,
   type TextLinkHoverValue,

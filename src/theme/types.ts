@@ -105,6 +105,11 @@ export const alignValues = [
 
 export type AlignValue = (typeof alignValues)[number]
 
+/** `text-align` on type primitives. Not layout `alignX` / `alignY`. */
+export const textAlignValues = ['start', 'end', 'center', 'justify'] as const
+
+export type TextAlignValue = (typeof textAlignValues)[number]
+
 export const scrollValues = ['vertical', 'horizontal', 'both'] as const
 
 export type ScrollValue = (typeof scrollValues)[number]

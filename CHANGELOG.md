@@ -4,6 +4,10 @@ All notable changes to Panelize are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+### Added
+
+- Type primitives (`Text`, `Heading`, `Span`, `TextLink`, `Label`) take `align` (`start` / `end` / `center` / `justify`) for `text-align`. Omit = unset. Not layout `alignX` / `alignY`.
+
 ## [0.1.3] - 2026-10-14
 
 Docs only. No change to the components, props, or theme.
