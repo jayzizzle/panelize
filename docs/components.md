@@ -7,24 +7,24 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 | Component | Element        | Direct parent                                             | Notes                                                                                    |
 | --------- | -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `Panels`  | `div`          | any                                                       | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
-| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. One item, or a track for several.   |
+| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. `placeX` / `placeY` place contents. |
 | `Rows`    | `div` (column) | any                                                       | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
-| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`.                                                             |
+| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`. `placeX` / `placeY` place contents (inner row).             |
 | `Cols`    | `div` (row)    | any                                                       | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
-| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`.                                                              |
+| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`. `placeX` / `placeY` place contents (inner column).           |
 | `Grid`    | `div` (grid)   | any                                                       | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
-| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
-| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). No background or color.                |
+| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`. `placeX` / `placeY` place contents.   |
+| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). `placeX` / `placeY` place contents.    |
 
 ## Type
 
-| Component  | Element   | Notes                                                                                                     |
-| ---------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase`. |
-| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                              |
-| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                    |
-| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                        |
-| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                   |
+| Component  | Element   | Notes                                                                                                               |
+| ---------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase` / `align`. |
+| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                                        |
+| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                              |
+| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                                  |
+| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`. Same `align` as `Text`.                     |
 
 `color` on type and controls: `primary` / `secondary` / `accent` (brand), `danger` / `warning` / `success` / `info` (status), or raw CSS.
 
@@ -58,4 +58,4 @@ None is a layout shell. The wrapper (`Row` / `Col` / `Cell` / `Panel` / `Div`) p
 | `defaultTheme`                   | What components use without a provider.                                               |
 | `palette`                        | Frozen gray ramp: `gray[0]`–`[6]`, `black`, `white`, `extraDark` … `extraLight`.      |
 
-Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`.
+Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`. Type `align`: `start` | `end` | `center` | `justify`.

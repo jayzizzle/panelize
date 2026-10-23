@@ -64,7 +64,7 @@ Panelize ships docs written for coding agents (`llms.txt` and `docs/`). Installi
 npx panelize init-agents
 ```
 
-This adds a short Panelize section to `AGENTS.md`, a file most coding agents read. The section tells the agent to read `node_modules/panelize/llms.txt` and `docs/composition.md` before writing UI, so it stays current when you upgrade the package. If `AGENTS.md` already exists, your content is left alone and only the section between the `<!-- panelize:start -->` and `<!-- panelize:end -->` lines is added or updated. Commit the result.
+This adds a short Panelize section to `AGENTS.md`, a file most coding agents read. The section tells the agent to read `node_modules/panelize/llms.txt` and `docs/composition.md` before writing UI, so it stays current when you upgrade the package. If `AGENTS.md` already exists, your content is left alone and only the section between the `<!-- panelize:start -->` and `<!-- panelize:end -->` lines is added or updated. Commit the result. The docs the agent reads update with the package; re-run the command after an upgrade only to refresh the section itself (and add `--force` to refresh an edited `.cursor/rules/panelize.mdc`).
 
 | Option      | Also writes                                                                                                                             |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -334,7 +334,9 @@ Split (scroll the **pane**, not the outer `Panels`). Omit `horizontal` and the p
 
 `Div` is a catch-all box (spacing, size, border, `fill` / `flex`). It does not set `background` or `color`.
 
-`alignX` / `alignY` are **screen** axes. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit. Unused flex axis is a no-op. `space-*` is flex main; `baseline` is flex cross.
+`alignX` / `alignY` are **screen** axes. They place **this box** in its parent. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit. Unused flex axis is a no-op. `space-*` is flex main; `baseline` is flex cross.
+
+`placeX` / `placeY` place **contents** inside `Col` / `Row` / `Cell` / `Panel` / `Div`. Omit both = block flow. Either one makes that box a flex container (`Col` / `Panel` / `Div` / `Cell` column; `Row` row). Use them to center one child (an image, a custom widget), not to stack two siblings — those still go in a track.
 
 `wrap` is on `Rows` / `Cols` (not `Grid`). `stack` is on `horizontal` `Panels` / `Cols` / `Grid`: **at most** this wide → column. Not Tailwind `md:` (and-up). Default `Panels` is already a column (`stack` there is ignored). `stackCols` is column count while stacked (default 1). `spanX` / `spanY` are on `Cell`; `stack` forces `spanX` to 1.
 
@@ -477,6 +479,8 @@ Color from the nearest `Panel`: omit = `text.base`; `muted` / `highlighted`; `co
 
 `Heading` `level` picks the tag. Omit `size` = `defaults.heading.size[level]` (UA rem: `2` / `1.5` / `1.17` / `1` / `0.83` / `0.67`). Instance `size` overrides. Omit `weight` = `bold`. Omit `family` = `display`. Hosts change the bank in `createPanelizeTheme`. No UA heading margin; the line box hugs the glyphs (`line-height: 1`). Put spacing on the parent (`gap` on `Rows` / `Cols`, or margin or padding on a `Row` / `Col`), not on `Heading`.
 
+`align` is `text-align` (`start` / `end` / `center` / `justify`). Omit = unset. It is not place — `alignX` / `alignY` stay on the wrapper. A `Text` / `Heading` is a block as wide as its parent when the row stretches, so `alignX` on the `Row` will not move the glyphs.
+
 Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (system stack). Not CSS `display`. `Text` / `Button` / `Chip` omit = `base`. The library does not load font files. `lineHeight` is unitless `1.2`. `uppercase` is a bool. Omit `weight` on `Text` = `base` (`400`) so parent weight does not leak.
 
 | `size`       | Default    | `weight` | CSS |
@@ -500,7 +504,7 @@ Family is a token prop: `base` (Open Sans), `display` (Montserrat), `mono` (syst
         </Text>
       </Row>
       <Row>
-        <Text muted size='small'>
+        <Text muted size='small' align='center'>
           Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
         </Text>
       </Row>

@@ -9,6 +9,7 @@ import {
   type FontSizeValue,
   type FontWeightValue,
   type HeadingLevel,
+  type TextAlignValue,
   usePanelizeTheme,
 } from '~/src/theme'
 
@@ -37,7 +38,7 @@ const StyledHeading = styled.h1<TextTypographyVars>`
   ${({ $customCss }) => $customCss ?? ''}
 `
 
-export type HeadingProps = ComponentPropsWithoutRef<'h1'> & {
+export type HeadingProps = Omit<ComponentPropsWithoutRef<'h1'>, 'align'> & {
   /**
    * HTML heading level (`h1`–`h6`). Required. Size comes from `defaults.heading.size` unless `size` is set.
    * No UA margin/padding. Line box hugs cap height (`line-height: 1` + `text-box` trim). Gap belongs on a layout parent.
@@ -64,6 +65,11 @@ export type HeadingProps = ComponentPropsWithoutRef<'h1'> & {
   underlined?: boolean
   /** `text-transform: uppercase`. Default off. */
   uppercase?: boolean
+  /**
+   * `text-align` of the glyphs (`start` / `end` / `center` / `justify`). Omit = unset.
+   * Not place — that stays on the wrapper (`alignX`).
+   */
+  align?: TextAlignValue
   /** Extra CSS appended to this component’s styles. */
   css?: string
 }
@@ -91,6 +97,7 @@ export function Heading(props: HeadingProps) {
     italic,
     underlined,
     uppercase,
+    align,
     css: customCss,
     ...dom
   } = props
@@ -121,6 +128,7 @@ export function Heading(props: HeadingProps) {
         $italic={italic}
         $underlined={underlined}
         $uppercase={uppercase}
+        $align={align}
         $customCss={customCss}
         {...dom}
       />

@@ -67,6 +67,39 @@ describe('layout', () => {
     }
   })
 
+  it('does not become a flex container without placeX / placeY', () => {
+    renderInShell(
+      <Cols>
+        <Col data-testid='plain'>
+          <Text>a</Text>
+        </Col>
+        <Col>
+          <Text>b</Text>
+        </Col>
+      </Cols>,
+    )
+    expect(screen.getByTestId('plain')).not.toHaveStyle({ display: 'flex' })
+  })
+
+  it('places contents with placeX / placeY', () => {
+    renderInShell(
+      <Cols>
+        <Col data-testid='placed' height='8rem' placeX='center' placeY='center'>
+          <Text>in</Text>
+        </Col>
+        <Col>
+          <Text>side</Text>
+        </Col>
+      </Cols>,
+    )
+    expect(screen.getByTestId('placed')).toHaveStyle({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    })
+  })
+
   it('appends css and passes style through', () => {
     renderInShell(
       <Div data-testid='box' style={{ opacity: 0.5 }} css='outline: 1px solid red'>
@@ -93,6 +126,15 @@ describe('type', () => {
     expect(screen.getByText('span').tagName).toBe('SPAN')
     expect(screen.getByRole('link', { name: 'link' })).toHaveAttribute('href', '/x')
     expect(screen.getByText('label').tagName).toBe('LABEL')
+  })
+
+  it('applies text-align from align', () => {
+    renderInShell(
+      <Text align='center' data-testid='aligned'>
+        centered
+      </Text>,
+    )
+    expect(screen.getByTestId('aligned')).toHaveStyle({ textAlign: 'center' })
   })
 })
 

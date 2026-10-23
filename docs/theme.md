@@ -67,7 +67,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 ```
 
-Place `Stat` in a `Col` / `Row` / `Cell` / `Panel`. `Stat` does not take `alignX`.
+Place `Stat` in a `Col` / `Row` / `Cell` / `Panel`. `Stat` does not take `alignX` or `placeX` — the parent does.
 
 ## Recipes
 

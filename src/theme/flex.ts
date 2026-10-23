@@ -116,6 +116,34 @@ export function flexAlignCss(
   `
 }
 
+export type PlaceProps = {
+  /**
+   * Left–right place of **contents** inside this box. Omit both `placeX` and `placeY` = block
+   * flow (no inner flex). Setting either makes this box a flex container.
+   * `Col` / `Panel` / `Div` / `Cell` are a column; `Row` is a row. Not `alignX` (that places
+   * this box in its parent). `space-*` only packs the inner main axis.
+   */
+  placeX?: AlignValue
+  /**
+   * Top–bottom place of **contents** inside this box. Same omit / flex rules as `placeX`.
+   * Not `alignY` (that places this box in its parent).
+   */
+  placeY?: AlignValue
+}
+
+/** Inner flex so an item box can place its contents. No-op until `placeX` or `placeY` is set. */
+export function placeContentCss(column: boolean, placeX?: AlignValue, placeY?: AlignValue) {
+  if (!placeX && !placeY) {
+    return
+  }
+
+  return css`
+    display: flex;
+    flex-direction: ${column ? 'column' : 'row'};
+    ${flexAlignCss(column, placeX, placeY)}
+  `
+}
+
 export function resolveAlignValue(value: AlignValue | undefined, fallback: AlignValue): AlignValue {
   return value ?? fallback
 }

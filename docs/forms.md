@@ -11,7 +11,7 @@ Per-control behavior notes: [controls](controls.md). Full prop list: exported ty
 - `Switch` / `Checkbox` / `Radio` — wrap with `Label` (same `size`). Empty checkbox/radio stroke follows the label (`currentColor`).
 - `Label` — type-like ink; not a layout shell.
 
-Do not add `alignX` / `flex` / padding-as-layout on these to position them. Use a `Col` / `Row` / `Div`.
+Do not add `alignX` / `flex` / padding-as-layout on these to position them. Use a `Col` / `Row` / `Div` (`placeX` / `placeY` to place the control inside that box).
 
 ## Value ownership
 

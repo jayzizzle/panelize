@@ -17,7 +17,12 @@ export {
   palette,
 } from '~/src/theme/color'
 export { createPanelizeTheme, defaultTheme } from '~/src/theme/defaults'
-export { type FlexAlignProps, type GridAlignProps, type SelfAlignProps } from '~/src/theme/flex'
+export {
+  type FlexAlignProps,
+  type GridAlignProps,
+  type PlaceProps,
+  type SelfAlignProps,
+} from '~/src/theme/flex'
 export {
   defaultFontFamilies,
   defaultFontSizes,
@@ -96,6 +101,8 @@ export {
   type StatusToken,
   statusTokens,
   type SwitchDefaults,
+  type TextAlignValue,
+  textAlignValues,
   type TextareaDefaults,
   type TextLinkDefaults,
   type TextLinkHoverValue,

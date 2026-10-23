@@ -17,8 +17,8 @@ Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
 - Track pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panels` holds only `Panel`. A `Panel` normally sits under `Panels`, and may also sit in a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 - `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
 - The reverse holds too. **Two or more** items in a `Panel` or `Div` (heading, copy, button) go in `Rows` (stacked), `Cols` (side by side), or `Grid`, never loose siblings. The track owns order and `gap`.
-- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
-- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
+- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` place contents inside that box. Nested controls and custom components do not position themselves.
+- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens. Type `align` is `text-align`, not place.
 
 The library does not warn at runtime if a host ignores this. Follow it anyway — that is how the tree stays readable.
 
@@ -29,7 +29,7 @@ The library does not warn at runtime if a host ignores this. Follow it anyway �
 - [Components](docs/components.md): every export, element, parent, and value API on one page
 - Prop reference: `node_modules/panelize/dist/index.d.ts` (every prop is documented in JSDoc; read the type, not a guess)
 - [Shell (`Panels` / `Panel`)](docs/shell.md): page vs split, `fill`, `scroll`, `horizontal`, `stack`
-- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `gap`, `wrap`, `stack`, `Div`, `Grid`
+- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `alignX` / `placeX`, `gap`, `wrap`, `stack`, `Div`, `Grid`
 - [Controls](docs/controls.md): per-control behavior notes (chrome, defaults, edge cases)
 - [Accessibility](docs/accessibility.md): names, structure, keyboard, roles, focus
 - [Text](docs/text.md): `Text`, `Heading`, `Span`, `TextLink`, `Label`

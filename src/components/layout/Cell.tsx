@@ -5,6 +5,7 @@ import {
   type BoxEdges,
   boxEdgesCss,
   gridSelfAlignCss,
+  placeContentCss,
   resolveBorderColor,
   resolveBorderEdges,
   resolveBoxEdges,
@@ -20,6 +21,7 @@ import {
   type BorderColorValue,
   type BoxSpacingProps,
   type DirectionalBorderProps,
+  type PlaceProps,
   type SizeLimitProps,
   type SpaceValue,
   usePanelizeTheme,
@@ -35,6 +37,8 @@ type StyledCellProps = {
   $borderWidth: string
   $borderRadius: string
   $borderColor: string
+  $placeX?: AlignValue
+  $placeY?: AlignValue
   $customCss?: string
 }
 
@@ -66,12 +70,14 @@ const StyledCell = styled.div<StyledCellProps>`
   ${({ $spanX }) => spanCss('column', $spanX)}
   ${({ $spanY }) => spanCss('row', $spanY)}
   ${({ $alignX, $alignY }) => gridSelfAlignCss($alignX, $alignY)}
+  ${({ $placeX, $placeY }) => placeContentCss(true, $placeX, $placeY)}
   ${({ $customCss }) => $customCss ?? ''}
 `
 
 export type CellProps = ComponentPropsWithoutRef<'div'> &
   BoxSpacingProps &
   SizeLimitProps &
+  PlaceProps &
   DirectionalBorderProps & {
     /** How many column tracks this cell covers. Default `1`. Becomes 1 when the parent `Grid` is stacked to one column. */
     spanX?: number
@@ -100,7 +106,7 @@ export type CellProps = ComponentPropsWithoutRef<'div'> &
 
 /**
  * One cell in a `Grid`. Direct child of `Grid` only. No `width` / `height` / `fill` — span
- * tracks with `spanX` / `spanY`. Place content here.
+ * tracks with `spanX` / `spanY`. `placeX` / `placeY` place contents inside the cell.
  *
  * @example
  * ```tsx
@@ -121,6 +127,8 @@ export function Cell(props: CellProps) {
     spanY,
     alignX,
     alignY,
+    placeX,
+    placeY,
     css: customCss,
     borderWidth,
     borderX,
@@ -141,6 +149,8 @@ export function Cell(props: CellProps) {
       $spanY={spanY}
       $alignX={alignX}
       $alignY={alignY}
+      $placeX={placeX}
+      $placeY={placeY}
       $edges={resolveBoxEdges(spacing, defaults.cell, space)}
       $size={resolveSizeLimits(size, space)}
       $borderWidth={resolveBorderEdges(

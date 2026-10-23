@@ -19,8 +19,8 @@ Read [docs/composition.md](docs/composition.md) before writing JSX. Summary:
 - Track pairing is bidirectional. `Row` exists only as a direct child of `Rows`. `Col` only under `Cols`. `Cell` only under `Grid`. `Panels` holds only `Panel`. A `Panel` normally sits under `Panels`, and may also sit in a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 - `Rows` / `Cols` / `Grid` need **two or more** of their item. One band → put it in the `Panel` or a `Div`.
 - The reverse holds too. **Two or more** items in a `Panel` or `Div` (heading, copy, button) go in `Rows` (stacked), `Cols` (side by side), or `Grid`, never loose siblings. The track owns order and `gap`.
-- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). Nested controls and custom components do not position themselves.
-- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens.
+- The **wrapper** owns place (`alignX` / `alignY`, `flex`, `fill`, `gap`, size). `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` place contents inside that box. Nested controls and custom components do not position themselves.
+- Visible copy goes in `Text` / `Heading` / `Span` / `TextLink` / `Label` so it inherits the nearest `Panel` text tokens. Type `align` is `text-align`, not place.
 
 The library does not warn at runtime if a host ignores this. Follow it anyway — that is how the tree stays readable.
 
@@ -31,7 +31,7 @@ The library does not warn at runtime if a host ignores this. Follow it anyway �
 - [Components](docs/components.md): every export, element, parent, and value API on one page
 - Prop reference: `node_modules/panelize/dist/index.d.ts` (every prop is documented in JSDoc; read the type, not a guess)
 - [Shell (`Panels` / `Panel`)](docs/shell.md): page vs split, `fill`, `scroll`, `horizontal`, `stack`
-- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `gap`, `wrap`, `stack`, `Div`, `Grid`
+- [Layout vocabulary](docs/layout.md): `fill` vs `flex`, `alignX` / `placeX`, `gap`, `wrap`, `stack`, `Div`, `Grid`
 - [Controls](docs/controls.md): per-control behavior notes (chrome, defaults, edge cases)
 - [Accessibility](docs/accessibility.md): names, structure, keyboard, roles, focus
 - [Text](docs/text.md): `Text`, `Heading`, `Span`, `TextLink`, `Label`
@@ -93,7 +93,7 @@ A `Panel` is an **open** section. It is not a homogeneous track.
 
 ## Who positions
 
-The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on `Panels`, `Panel`, `Rows`, `Row`, `Cols`, `Col`, `Grid`, `Cell`, or `Div` — not on `Text`, `Button`, or a custom widget so it can “nudge itself.”
+The wrapper layout box owns place. Set `alignX` / `alignY`, `flex`, `fill`, `gap`, `width` / `height` on the layout primitives — not on `Text`, `Button`, or a custom widget so it can “nudge itself.” `alignX` / `alignY` place **this box** in its parent. `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` place **contents** inside that box (one child, or a nested track). Tracks (`Panels` / `Rows` / `Cols` / `Grid`) have no `place*`. `align` on type is `text-align` (glyphs in the line), not place.
 
 `Text` / `Heading` / `Span` / `TextLink` / `Label` are not layout shells (no `fill` / `flex` / padding). Controls may take `fill` to stretch the control itself; the parent still decides where the control sits.
 
@@ -225,21 +225,22 @@ Each block is wrong. The comment says why.
 </Col>
 ```
 
-Center with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`.
+Center the **box** with `alignX` on the wrapper (`Cols`, `Row`, `Panel`), not on `Button`. Center **contents** with `placeX` / `placeY` on that wrapper.
 
 ## Which primitive?
 
-| You want                    | Use                                                |
-| --------------------------- | -------------------------------------------------- |
-| The outer frame of a view   | `Panels`                                           |
-| A surface (nav, main, card) | `Panel`                                            |
-| A vertical list of bands    | `Rows` of two or more `Row`                        |
-| A horizontal list of items  | `Cols` of two or more `Col`                        |
-| A two-dimensional layout    | `Grid` of two or more `Cell`                       |
-| One wrapper or one band     | `Div`, or the `Panel` itself                       |
-| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box     |
-| Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label` |
-| Copyable starting points    | [recipes](recipes.md)                              |
+| You want                    | Use                                                             |
+| --------------------------- | --------------------------------------------------------------- |
+| The outer frame of a view   | `Panels`                                                        |
+| A surface (nav, main, card) | `Panel`                                                         |
+| A vertical list of bands    | `Rows` of two or more `Row`                                     |
+| A horizontal list of items  | `Cols` of two or more `Col`                                     |
+| A two-dimensional layout    | `Grid` of two or more `Cell`                                    |
+| One wrapper or one band     | `Div`, or the `Panel` itself                                    |
+| Two or more items in a box  | `Rows` / `Cols` / `Grid`, not loose in the box                  |
+| Center one child in a slot  | `placeX` / `placeY` on `Col` / `Row` / `Cell` / `Panel` / `Div` |
+| Words on screen             | `Text` / `Heading` / `Span` / `TextLink` / `Label`              |
+| Copyable starting points    | [recipes](recipes.md)                                           |
 
 ---
 
@@ -253,7 +254,7 @@ Default `Panels` is an **absolute** column (`inset` when `fill`). `relative` opt
 
 Direct children: only `Panel`. **One `Panel` is allowed.** Nested shells: a `Panel` may contain another `Panels`. A `Panel` may also sit inside a `Cell` / `Col` / `Row` when that spot needs its own surface (`variant`).
 
-`Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants.
+`Panel` is a section (surface). `variant` is `muted` / `base` / `highlighted` (default `base`). It publishes `--panelize-bg`, `--panelize-text`, `--panelize-text-muted`, `--panelize-text-highlighted`, `--panelize-border`. Nested panels and children share those. `dark` / `light` are schemes on the provider, not panel variants. `placeX` / `placeY` place contents inside the `Panel` (one child, or a nested track). They do not replace `alignX` / `alignY` on `Panels`.
 
 ## Host height
 
@@ -317,24 +318,25 @@ Only on `Panels` and `Panel`. `vertical` clips x. `horizontal` / `both` need a c
 
 Space / size / border tokens: `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Breakpoints: `sm` | `md` | `lg`. Token or CSS length — not a unitless number. Boxes are `border-box`.
 
-| Prop                      | Meaning                                                                                                                                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `fill`                    | Size to parent. Absolute `Panels`: `inset: 0`. Else height / width 100%. `Row` theme height `auto` → width 100% only. `Col` theme width `auto` → height 100% only. Explicit `width` / `height` win. Not on `Cell`. |
-| `width` / `height`        | All layout except `Cell`. `Div` omit = unset.                                                                                                                                                                      |
-| `flex`                    | `flex: 1 1 0%` plus `min-width` / `min-height` 0 (nested `scroll` can shrink). Not `fill`. `Panel` / `Row` / `Col` / `Div` are `flex-shrink: 0` until `flex`.                                                      |
-| `alignX` / `alignY`       | Screen axes. Set on the **wrapper**. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit.                                                                           |
-| `gap`                     | `Panels`, `Rows`, `Cols`, `Grid`.                                                                                                                                                                                  |
-| `wrap`                    | `Rows` / `Cols`. Not `stack`. Not `Grid`.                                                                                                                                                                          |
-| `stack`                   | `horizontal` `Panels` / `Cols` / `Grid`. Container query, **at most** this wide → column.                                                                                                                          |
-| `stackCols`               | `Grid` + `stack`: column count while stacked. Default 1.                                                                                                                                                           |
-| `numCols` / `numRows`     | `Grid` only. Equal `minmax(0, 1fr)` tracks.                                                                                                                                                                        |
-| `spanX` / `spanY`         | `Cell` only. Default 1. `stack` forces `spanX` to 1 when `stackCols` is 1.                                                                                                                                         |
-| `scroll`                  | `Panels` / `Panel` only. See [shell](shell.md).                                                                                                                                                                    |
-| `relative` / `horizontal` | `Panels` only.                                                                                                                                                                                                     |
+| Prop                      | Meaning                                                                                                                                                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fill`                    | Size to parent. Absolute `Panels`: `inset: 0`. Else height / width 100%. `Row` theme height `auto` → width 100% only. `Col` theme width `auto` → height 100% only. Explicit `width` / `height` win. Not on `Cell`.                  |
+| `width` / `height`        | All layout except `Cell`. `Div` omit = unset.                                                                                                                                                                                       |
+| `flex`                    | `flex: 1 1 0%` plus `min-width` / `min-height` 0 (nested `scroll` can shrink). Not `fill`. `Panel` / `Row` / `Col` / `Div` are `flex-shrink: 0` until `flex`.                                                                       |
+| `alignX` / `alignY`       | Screen axes. Set on the **wrapper**. Track omit: flex cross `stretch` / main `start`; `Grid` `stretch` / `stretch`. Child omit: inherit.                                                                                            |
+| `placeX` / `placeY`       | Place **contents** inside an item box (`Col` / `Row` / `Cell` / `Panel` / `Div`). Omit both = block flow. Either one makes that box a flex container (`Col` / `Panel` / `Div` / `Cell` column; `Row` row). Not `alignX` / `alignY`. |
+| `gap`                     | `Panels`, `Rows`, `Cols`, `Grid`.                                                                                                                                                                                                   |
+| `wrap`                    | `Rows` / `Cols`. Not `stack`. Not `Grid`.                                                                                                                                                                                           |
+| `stack`                   | `horizontal` `Panels` / `Cols` / `Grid`. Container query, **at most** this wide → column.                                                                                                                                           |
+| `stackCols`               | `Grid` + `stack`: column count while stacked. Default 1.                                                                                                                                                                            |
+| `numCols` / `numRows`     | `Grid` only. Equal `minmax(0, 1fr)` tracks.                                                                                                                                                                                         |
+| `spanX` / `spanY`         | `Cell` only. Default 1. `stack` forces `spanX` to 1 when `stackCols` is 1.                                                                                                                                                          |
+| `scroll`                  | `Panels` / `Panel` only. See [shell](shell.md).                                                                                                                                                                                     |
+| `relative` / `horizontal` | `Panels` only.                                                                                                                                                                                                                      |
 
 ## `Div`
 
-Catch-all box (spacing, size, border, `fill` / `flex`). No background or color of its own. Use it when you need one wrapper and a `Rows` of one `Row` would be wrong. It holds **one** item. Two or more go in `Rows` / `Cols` / `Grid`. Direct children: anything except a stray `Row` / `Col` / `Cell` (those still belong under their tracks). No `gap`; spacing between items comes from the track.
+Catch-all box (spacing, size, border, `fill` / `flex`). No background or color of its own. Use it when you need one wrapper and a `Rows` of one `Row` would be wrong. It holds **one** item. Two or more go in `Rows` / `Cols` / `Grid`. `placeX` / `placeY` place that one item (or a nested track). Direct children: anything except a stray `Row` / `Col` / `Cell` (those still belong under their tracks). No `gap`; spacing between items comes from the track.
 
 ## Tracks
 
@@ -387,6 +389,23 @@ Each tree stands alone. A track sits inside a `Panel`, and a `Panel` inside a `P
 
 `Cell` has no `width` / `height` / `fill`. Size comes from the grid tracks and `spanX` / `spanY`. `Cell` is `min-width` / `min-height` 0 so content can shrink.
 
+Center one child (an image, a custom widget) with `placeX` / `placeY` on the item box. Two or more children still go in a track. `space-*` only packs the inner **main** axis (`placeY` on a column box, `placeX` on a `Row`). A centered flex item shrinks to its content width; if the child must stay full-bleed, give it `fill` or `width='100%'` and use type `align` for the glyphs.
+
+```tsx
+<Panels fill>
+  <Panel>
+    <Cols>
+      <Col flex placeX='center' placeY='center' height='12rem'>
+        <Text>Centered in the column</Text>
+      </Col>
+      <Col flex>
+        <Text>Main</Text>
+      </Col>
+    </Cols>
+  </Panel>
+</Panels>
+```
+
 ## Borders
 
 Every layout box. Width cascade like padding: `borderWidth` → `borderX` / `Y` → side. `borderColor` is surface, brand, or status — not a `Panel` `variant`. Default width `none`.
@@ -399,27 +418,39 @@ Every layout box. Width cascade like padding: `borderWidth` → `borderX` / `Y` 
 
 Visible copy must use a type primitive so it inherits the nearest `Panel` (`--panelize-text`, muted, highlighted) and theme type tokens.
 
-| Component  | Element   | Notes                                                                                                                         |
-| ---------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | Body. Omit color → panel `text.base`.                                                                                         |
-| `Heading`  | `h1`–`h6` | Required `level` `1`–`6`. Omit `size` → theme heading size for that level. Omit `weight` → `bold`. Omit `family` → `display`. |
-| `Span`     | `span`    | Nested in `Text` / `Span`: omit size/weight/`family` → inherit. Omit color → CSS `inherit`.                                   |
-| `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit.                                                         |
-| `Label`    | `label`   | Caption for controls. Prefer `label` prop; `htmlFor` + control `id`. Wrap `Switch` / `Checkbox` / `Radio`.                    |
+| Component  | Element   | Notes                                                                                                                   |
+| ---------- | --------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | Body. Omit color → panel `text.base`. `align` is `text-align`.                                                          |
+| `Heading`  | `h1`–`h6` | Required `level` `1`–`6`. Same type props as `Text`, including `align`. Omit `size` → theme size for that level.        |
+| `Span`     | `span`    | Nested in `Text` / `Span`: omit size/weight/`family` → inherit. Omit color → CSS `inherit`. `align` is `text-align`.    |
+| `TextLink` | `a`       | Default chroma `primary`. Nested omit size/weight/`family` → inherit. `align` is `text-align`.                          |
+| `Label`    | `label`   | Caption for controls. Prefer `label` prop; `htmlFor` + control `id`. Wrap `Switch` / `Checkbox` / `Radio`. `align` too. |
 
 None of these is a layout shell: no `fill` / `flex` / padding. Spacing belongs on the parent: `gap` on `Rows` / `Cols` / `Grid`, or margin or padding on a `Row` / `Col` / `Cell` / `Div`.
+
+`align` is `text-align` (`start` / `end` / `center` / `justify`). Omit = unset. It is not place — `alignX` / `alignY` stay on the wrapper. A stretched `Text` / `Heading` is as wide as its parent, so `alignX` on the `Row` will not move the glyphs; set `align` on the type. `Span` and `TextLink` are inline, so `align` only shows when the box is wider than the glyphs.
 
 `muted` / `highlighted` use the panel `text` object. `color='primary'` / `secondary` / `accent` → `brand.*.base`. `color='danger'` / `warning` / `success` / `info` → `status.*.base`. Raw CSS `color` wins. If both flags, `highlighted` wins.
 
 Size: `fontSizes` tokens or CSS. Weight: omit on `Text` = `base` (400). Family: `base` / `display` / `mono`. The library does not load font files.
 
 ```tsx
-<Heading level={1} uppercase color='primary'>
-  Panelize
-</Heading>
-<Text muted size='small'>
-  Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
-</Text>
+<Panels fill>
+  <Panel>
+    <Rows gap='small'>
+      <Row>
+        <Heading level={1} uppercase color='primary' align='center'>
+          Panelize
+        </Heading>
+      </Row>
+      <Row>
+        <Text muted size='small' align='center'>
+          Nested <Span weight='bold'>bold</Span> and <TextLink href='/docs'>Docs</TextLink>
+        </Text>
+      </Row>
+    </Rows>
+  </Panel>
+</Panels>
 ```
 
 ---
@@ -495,7 +526,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 ```
 
-Place `Stat` in a `Col` / `Row` / `Cell` / `Panel`. `Stat` does not take `alignX`.
+Place `Stat` in a `Col` / `Row` / `Cell` / `Panel`. `Stat` does not take `alignX` or `placeX` — the parent does.
 
 ## Recipes
 
@@ -571,7 +602,7 @@ Per-control behavior notes: [controls](controls.md). Full prop list: exported ty
 - `Switch` / `Checkbox` / `Radio` — wrap with `Label` (same `size`). Empty checkbox/radio stroke follows the label (`currentColor`).
 - `Label` — type-like ink; not a layout shell.
 
-Do not add `alignX` / `flex` / padding-as-layout on these to position them. Use a `Col` / `Row` / `Div`.
+Do not add `alignX` / `flex` / padding-as-layout on these to position them. Use a `Col` / `Row` / `Div` (`placeX` / `placeY` to place the control inside that box).
 
 ## Value ownership
 
@@ -744,24 +775,24 @@ One line per export from `'panelize'`. Prop details are in the exported prop typ
 | Component | Element        | Direct parent                                             | Notes                                                                                    |
 | --------- | -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `Panels`  | `div`          | any                                                       | View shell. Children: only `Panel`. `fill`, `horizontal`, `relative`, `scroll`, `stack`. |
-| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. One item, or a track for several.   |
+| `Panel`   | `div`          | `Panels`, or a `Cell` / `Col` / `Row` for its own surface | Section. `variant` `muted` / `base` / `highlighted`. `placeX` / `placeY` place contents. |
 | `Rows`    | `div` (column) | any                                                       | Children: two or more `Row`. `gap`, `wrap`, `alignX` / `alignY`.                         |
-| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`.                                                             |
+| `Row`     | `div`          | `Rows`                                                    | `height` defaults to `auto`. `placeX` / `placeY` place contents (inner row).             |
 | `Cols`    | `div` (row)    | any                                                       | Children: two or more `Col`. `gap`, `wrap`, `stack`.                                     |
-| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`.                                                              |
+| `Col`     | `div`          | `Cols`                                                    | `width` defaults to `auto`. `placeX` / `placeY` place contents (inner column).           |
 | `Grid`    | `div` (grid)   | any                                                       | Children: two or more `Cell`. `numCols`, `numRows`, `stack`, `stackCols`.                |
-| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`.                                       |
-| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). No background or color.                |
+| `Cell`    | `div`          | `Grid`                                                    | `spanX` / `spanY`. No `width` / `height` / `fill`. `placeX` / `placeY` place contents.   |
+| `Div`     | `div`          | any                                                       | Wrapper for one item (several → `Rows` / `Cols`). `placeX` / `placeY` place contents.    |
 
 ## Type
 
-| Component  | Element   | Notes                                                                                                     |
-| ---------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase`. |
-| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                              |
-| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                    |
-| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                        |
-| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`.                                   |
+| Component  | Element   | Notes                                                                                                               |
+| ---------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Text`     | `p`       | `muted` / `highlighted` / `color` / `size` / `weight` / `family` / `italic` / `underlined` / `uppercase` / `align`. |
+| `Heading`  | `h1`–`h6` | Required `level`. Same type props as `Text`.                                                                        |
+| `Span`     | `span`    | Inline. Inherits size / weight / family from a parent `Text` / `Span`.                                              |
+| `TextLink` | `a`       | `color`, `hover`, `hoverUnderline`. Native `href`.                                                                  |
+| `Label`    | `label`   | `label` or `children`, `htmlFor`. Wrap `Switch` / `Checkbox` / `Radio`. Same `align` as `Text`.                     |
 
 `color` on type and controls: `primary` / `secondary` / `accent` (brand), `danger` / `warning` / `success` / `info` (status), or raw CSS.
 
@@ -795,7 +826,7 @@ None is a layout shell. The wrapper (`Row` / `Col` / `Cell` / `Panel` / `Div`) p
 | `defaultTheme`                   | What components use without a provider.                                               |
 | `palette`                        | Frozen gray ramp: `gray[0]`–`[6]`, `black`, `white`, `extraDark` … `extraLight`.      |
 
-Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`.
+Tokens: space / border / radius `none` | `extraSmall` | `small` | `base` | `large` | `extraLarge`. Font size `extraSmall` … `extraLarge`. Weight `thin` | `base` | `bold` | `heavy`. Family `base` | `display` | `mono`. Breakpoints `sm` | `md` | `lg`. Type `align`: `start` | `end` | `center` | `justify`.
 
 ---
 
