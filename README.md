@@ -64,7 +64,7 @@ Panelize ships docs written for coding agents (`llms.txt` and `docs/`). Installi
 npx panelize init-agents
 ```
 
-This adds a short Panelize section to `AGENTS.md`, a file most coding agents read. The section tells the agent to read `node_modules/panelize/llms.txt` and `docs/composition.md` before writing UI, so it stays current when you upgrade the package. If `AGENTS.md` already exists, your content is left alone and only the section between the `<!-- panelize:start -->` and `<!-- panelize:end -->` lines is added or updated. Commit the result.
+This adds a short Panelize section to `AGENTS.md`, a file most coding agents read. The section tells the agent to read `node_modules/panelize/llms.txt` and `docs/composition.md` before writing UI, so it stays current when you upgrade the package. If `AGENTS.md` already exists, your content is left alone and only the section between the `<!-- panelize:start -->` and `<!-- panelize:end -->` lines is added or updated. Commit the result. The docs the agent reads update with the package; re-run the command after an upgrade only to refresh the section itself (and add `--force` to refresh an edited `.cursor/rules/panelize.mdc`).
 
 | Option      | Also writes                                                                                                                             |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
